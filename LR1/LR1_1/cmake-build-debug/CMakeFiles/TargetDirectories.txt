@@ -1,0 +1,3 @@
+/home/fedor/CODE/C/fundy/LR1/cmake-build-debug/CMakeFiles/LR1.dir
+/home/fedor/CODE/C/fundy/LR1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/fedor/CODE/C/fundy/LR1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
