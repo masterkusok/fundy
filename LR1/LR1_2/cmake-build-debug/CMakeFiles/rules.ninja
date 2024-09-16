@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/fedor/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/fedor/CODE/C/fundy/LR1_2 -B/home/fedor/CODE/C/fundy/LR1_2/cmake-build-debug
+  command = /home/fedor/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/fedor/CODE/C/fundy/LR1/LR1_2 -B/home/fedor/CODE/C/fundy/LR1/LR1_2/cmake-build-debug
   description = Re-running CMake...
   generator = 1
 

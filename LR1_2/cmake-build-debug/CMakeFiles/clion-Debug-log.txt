@@ -1,1 +1,0 @@
-CMakeLists.txt not found in /home/fedor/CODE/C/fundy/LR1_2 Select CMakeLists.txt
