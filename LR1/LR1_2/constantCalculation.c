@@ -25,8 +25,8 @@ long double C(int m, int k) {
 }
 
 long double calculateLimit(double fault, long double (*func)(int, long double)) {
-    long double prev = func(1, -0.5); // при n=1 (1 + 1/n)^n
-    long double current = func(2, prev); // та же формула при n = 2
+    long double prev = func(1, -0.5);
+    long double current = func(2, prev);
     int n = 3;
     while (fabs(current - prev) > fault) {
         prev = current;
@@ -110,4 +110,90 @@ long double calculateRowSqrt2(double fault) {
         n++;
     }
     return current;
+}
+
+// ультра мега хз
+long double calculateRowGamma(double fault) {
+    long double current = -M_PI*M_PI/6, prev = 0.0;
+    current += 1.0/binpow(floor(sqrt(2)), 2) - 1.0/2.0;
+    prev = current;
+    current += 1.0/binpow(floor(sqrt(3)), 2) - 1.0/3.0;
+    int n = 4;
+    while(fabs(current - prev) > fault) {
+        prev = current;
+        current += 1.0/binpow(floor(sqrt(n)),2) - 1.0/n;
+        n++;
+    }
+    return current;
+}
+
+
+long double solveEquatation(double fault, long double (*func) (long double x), long double a, long double b) {
+    long double c;
+    while (fabs(b - a) > fault) {
+        c = (a + b) / 2.0;
+        long double f_a = func(a);
+        long double f_b = func(b);
+        long double f_c = func(c);
+
+        if (fabs(f_c) < fault) {
+            return c;
+        }
+        if (f_c * f_a < 0) {
+            b = c;
+        }
+        if (f_c * f_b < 0) {
+            a = c;
+        }
+    }
+    return (a + b) / 2.0;
+}
+
+// от 0.0001 до 10
+long double eEquatation(long double x) {
+    return log(x) - 1.0;
+}
+
+// от 0 до 360
+long double piEquatation(long double x) {
+    long double c = cos((x * M_PI) / 180.0);
+    return c + 1.0;
+}
+
+// от 0.0001 до 10
+long double ln2Equatation(long double x) {
+    return pow(M_E, x) - 2.0;
+}
+
+// от 0.0001 до 10
+long double sqrt2Equatation(long double x) {
+    return x * x - 2;
+}
+
+long double calculateT() {
+    int n = 500;
+    bool prime[n];
+    for (int i = 0; i < n; i++) {
+        prime[i] = true;
+    }
+
+    for (int p = 2; p * p < n; p++) {
+        if (prime[p] == true) {
+            for (int i = p * p; i < n; i += p) {
+                prime[i] = false;
+            }
+        }
+    }
+
+    long double p = 1;
+    for(int i = 1; i < n; i++) {
+        if (prime[i]) {
+            p *= p - 1 / p;
+        }
+    }
+    return p;
+}
+
+long double gammaEquatation(long double x) {
+    return pow(M_E, -x) - calculateT();
 }
