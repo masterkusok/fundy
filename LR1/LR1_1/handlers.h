@@ -1,26 +1,27 @@
 #ifndef HANDLERS_H
 #define HANDLERS_H
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef enum kOpts {
-    kOPT_H,
-    kOPT_P,
-    kOPT_S,
-    kOPT_E,
-    kOPT_A,
-    kOPT_F
-}kOpts;
+	kOPT_H,
+	kOPT_P,
+	kOPT_S,
+	kOPT_E,
+	kOPT_A,
+	kOPT_F,
+} kOpts;
 
 typedef enum {
-    S_OK,
-    E_INVALID_FLAG_FORMAT,
-    E_UNKNOWN_FLAG,
-    E_TOO_MANY_ARGS,
-    E_NOT_ENOUGH_ARGS
-} State;
-
+	kS_OK,
+	kE_INVALID_FLAG_FORMAT,
+	kE_UNKNOWN_FLAG,
+	kE_TOO_MANY_ARGS,
+	kE_NOT_ENOUGH_ARGS,
+	kE_INVALID_INPUT,
+} kState;
 
 int ParseOpts(int, char**, kOpts*, int*);
 void HandleErrors(int);
