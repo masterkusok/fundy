@@ -45,8 +45,8 @@ request* parseArgs(int argc, char** args) {
 	bool providedOutput = false;
 
 	r->option = -1;
-	for (int i = 0; i < strlen(flag); i++) {
-		switch (flag[1]) {
+	for (int i = 1; i < strlen(flag); i++) {
+		switch (flag[i]) {
 			case 'd': {
 				r->option = kOPT_D;
 				break;
@@ -114,7 +114,7 @@ void logErrors(kState state) {
 			break;
 		}
 		case kE_UNKNOWN_FLAG: {
-			printf("Unknown flag was provided\nAvailable flags are:\n-q\n-t\n-m\n");
+			printf("Unknown flag was provided\nAvailable flags are:\n-d\n-i\n-s\n-a\n+n for providing output file\n");
 			break;
 		}
 		case kE_INVALID_FLAG: {
