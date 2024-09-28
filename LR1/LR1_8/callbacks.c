@@ -5,7 +5,7 @@ int fromBase(char num[99], int len, int base) {
 	len--;
 	for (int i = len; i >= 0; i--) {
 		int mult = 0;
-		if ('0' <= num[i] <= '9') {
+		if ('0' <= num[i] && num[i] <= '9') {
 			mult = num[i] - '0';
 		} else {
 			mult = num[i] - 7 - '0';
