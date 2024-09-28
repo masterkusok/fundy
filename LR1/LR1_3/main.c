@@ -4,19 +4,21 @@
 #include "parseArgs.h"
 
 int main(int argc, char** args) {
-    kState code;
-    request* r = parseArgs(argc, args, &code);
-    if(code != kSTATE_OK) {
-        logErrors(code);
-        return code;
-    }
+	kState code;
+	Request* r = ParseArgs(argc, args, &code);
+	if (code != kS_OK) {
+		LogErrors(code);
+		return code;
+	}
 
-    void (*handlers[3])(double*) = {
-        handlerOptQ,
-        handlerOptM,
-        handlerOptT
-    };
+	void (*handlers[3])(double*) = {
+		handlerOptQ,
+		handlerOptM,
+		handlerOptT,
+	};
 
-    handlers[r->option](r->nums);
-    return 0;
+	handlers[r->option](r->nums);
+	free(r->nums);
+	free(r);
+	return 0;
 }
