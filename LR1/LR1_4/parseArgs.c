@@ -24,6 +24,43 @@ bool fileExists(char* path) {
 	return exists;
 }
 
+bool pathEquals(char* path1, char* path2) {
+	char *p1 = path1, *p2 = path2;
+	while (p1 || p2) {
+		if (*p1 != *p2) {
+			return false;
+		}
+		if (*p1 == '\0' || *p2 == '\0') {
+			return *p1 == '\0' && *p2 == '\0';
+		}
+		p1++;
+		p2++;
+	}
+	return true;
+}
+
+char* getFileName(char* path) {
+	char buffer[99];
+	int curLen = 0;
+	for (char* i = path; *i; i++) {
+		if (*i == '\0') {
+			break;
+		}
+		if (*i == '/' || *i == '\\') {
+			curLen = 0;
+			continue;
+		}
+		buffer[curLen] = *i;
+		curLen++;
+	}
+	char* output = malloc((curLen + 1) * sizeof(char));
+	for (int i = 0; i < curLen; i++) {
+		output[i] = buffer[i];
+	}
+	output[curLen] = '\0';
+	return output;
+}
+
 request* parseArgs(int argc, char** args) {
 	request* r = malloc(sizeof(request));
 	if (r == NULL) {
@@ -92,10 +129,15 @@ request* parseArgs(int argc, char** args) {
 
 	if (providedOutput) {
 		r->outputFile = args[3];
+		if (pathEquals(r->inputFile, r->outputFile)) {
+			r->state = kE_EQUAL_PATHS;
+			return r;
+		}
 	} else {
-		r->outputFile = malloc((5 + strlen(r->inputFile)) * sizeof(char));
+		char* filename = getFileName(r->inputFile);
+		r->outputFile = malloc((5 + strlen(filename)) * sizeof(char));
 		strcpy(r->outputFile, "out_");
-		strcat(r->outputFile, r->inputFile);
+		strcat(r->outputFile, filename);
 	}
 
 	r->state = kS_OK;
@@ -123,6 +165,10 @@ void logErrors(kState state) {
 		}
 		case kE_FILE_NOT_EXIST: {
 			printf("Specified file does not exist\n");
+			break;
+		}
+		case kE_EQUAL_PATHS: {
+			printf("Provided equal input and output files\n");
 			break;
 		}
 		default: {
