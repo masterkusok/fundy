@@ -6,7 +6,7 @@
 #include "states.h"
 #include "stdio.h"
 
-kState calculateRow(double, long double (*)(double, int), double, long double*);
+kState calculateRow(double, int, long double (*)(double, int), double, long double*);
 long double funcA(double, int);
 long double funcB(double, int);
 long double funcC(double, int);

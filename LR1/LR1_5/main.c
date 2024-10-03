@@ -11,10 +11,11 @@ int main(int argc, char** args) {
 	}
 	long double result = 0.0;
 	long double (*callbacks[4])(double x, int n) = {funcA, funcB, funcC, funcD};
+	int intervalStarts[4] = {0, 0, 0, 1};
 
 	printf("Counting Rows, epsilon=%lf, x=%lf\n", epsilon, x);
 	for (int i = 0; i < 4; i++) {
-		code = calculateRow(epsilon, callbacks[i], x, &result);
+		code = calculateRow(epsilon, intervalStarts[i], callbacks[i], x, &result);
 		if (code != kS_OK) {
 			printf("Error during calculating %c row:\n", 'A' + i);
 			logErrors(code);

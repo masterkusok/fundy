@@ -51,6 +51,10 @@ void logErrors(kState state) {
 			printf("Invalid number of arguments provided\n");
 			break;
 		}
+		case kME_TYPE_OVERFLOW: {
+			printf("Target value is too large for long double, try do decrease epsilon\n");
+			break;
+		}
 		default: {
 			printf("Unknown error code\n");
 			break;

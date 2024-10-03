@@ -45,7 +45,11 @@ void HandleOptS(char* input, char* output) {
 
 	if (in && out) {
 		while ((ch = fgetc(in)) != EOF) {
-			if (!((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == ' ')) {
+			if (!((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == ' ' ||
+				  ch == '\n')) {
+				if (ch == '\n') {
+					count--;
+				}
 				count++;
 			}
 			if (ch == '\n') {
@@ -53,7 +57,7 @@ void HandleOptS(char* input, char* output) {
 				count = 0;
 			}
 		}
-		if (count > 0) {
+		if (count >= 0) {
 			fprintf(out, "%d\n", count);
 		}
 	}

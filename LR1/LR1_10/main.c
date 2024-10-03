@@ -10,11 +10,16 @@ int fromBase(char num[99], int len, int base) {
 	int result = 0;
 	len--;
 	for (int i = len; i >= 0; i--) {
+		if (i == 0 && num[i] == '-') {
+			return -result;
+		}
 		int mult = 0;
 		if ('0' <= num[i] && num[i] <= '9') {
 			mult = num[i] - '0';
-		} else {
-			mult = num[i] - 7 - '0';
+		} else if ('A' <= num[i] && num[i] <= 'Z') {
+			mult = num[i] - 55;
+		} else if ('a' <= num[i] && num[i] <= 'z') {
+			mult = num[i] - 87;
 		}
 		result += pow(base, len - i) * mult;
 	}
@@ -25,6 +30,10 @@ void writeInBase(int decimalNum, int base) {
 	printf("In base %d:\n", base);
 	int currentLen = 0;
 	char str[99];
+	if (decimalNum < 0) {
+		printf("-");
+		decimalNum *= -1;
+	}
 	while (decimalNum > 0) {
 		int currentDigit = decimalNum % base;
 		if (currentDigit <= 9) {
@@ -35,7 +44,6 @@ void writeInBase(int decimalNum, int base) {
 		currentLen++;
 		decimalNum /= base;
 	}
-
 	for (int i = currentLen - 1; i >= 0; i--) {
 		printf("%c", str[i]);
 	}
@@ -74,7 +82,9 @@ int main(int argc, char** args) {
 
 		// валидируем прочитанное слово. Ищем инородные символы + чекаем минимальное основание системы счисления
 		for (int i = 0; i < currentLen; i++) {
-			if (current[i] <= '9' && current[i] >= '0') {
+			if (current[i] == '-' && i == 0) {
+				continue;
+			} else if (current[i] <= '9' && current[i] >= '0') {
 				if (current[i] - '0' >= base) {
 					code = kE_INVALID_BASE;
 				}

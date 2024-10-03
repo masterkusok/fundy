@@ -33,24 +33,38 @@ void handlerOptQ(double* nums) {
 
 void handlerOptM(double* nums) {
 	int a = (int)nums[0], b = (int)nums[1];
+	int compA = a, compB = b;
+	if (a < 0) {
+		compA *= -1;
+	}
+	if (b < 0) {
+		compB *= -1;
+	}
+
 	if (b == 0) {
 		printf("number b cant be 0\n");
 		return;
 	}
-	for (int i = 2; b * i <= a; i++) {
-		if (b * i == a) {
-			printf("Yes, number a is multiple of b\n");
+	for (int i = 1; compB * i <= compA; i++) {
+		if (compB * i == compA) {
+			printf("Yes, %d is multiple of %d\n", a, b);
 			return;
 		}
 	}
-	printf("No, number a is not multiple of b\n");
+	printf("No, %d is not multiple of %d\n", a, b);
 }
 
 void handlerOptT(double* nums) {
 	double epsilon = nums[0], a = nums[1], b = nums[2], c = nums[3];
-	if (a - b - c < epsilon && b - a - c < epsilon && c - a - b < epsilon) {
+	if (a == 0 || a < 0 || b < epsilon || b < 0 || c < epsilon || c < 0) {
+		printf("No, input values cant be sides of a triangle\n");
+		return;
+	}
+	if (fabs(a * a - b * b - c * c) < epsilon || fabs(b * b - a * a - c * c) < epsilon ||
+		fabs(c * c - b * b - a * a) < epsilon) {
 		printf("Yes, input values can be sides of a triangle\n");
 		return;
 	}
+
 	printf("No, input values cant be sides of a triangle\n");
 }

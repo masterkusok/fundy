@@ -35,6 +35,12 @@ void MaxMinOnePass(int* array) {
 int main(int argc, char** args) {
 	int a, b;
 	kState code = ParseArgs(argc, args, &a, &b);
+
+	if (code != kS_OK) {
+		LogErrors(code);
+		return code;
+	}
+
 	srand(time(NULL));
 	printf("Point 1\n");
 	int array[ARR_LEN];
@@ -76,18 +82,15 @@ int main(int argc, char** args) {
 			}
 			IterNext(subIter);
 		}
-		free(subIter);
+		DestroyIterator(subIter);
 		VectorPush(C, valueA + currentClosest);
 		IterNext(iter);
 	}
-	free(iter);
 
 	PrintVector(C);
-	free(A->buffer);
-	free(B->buffer);
-	free(C->buffer);
-	free(A);
-	free(C);
-	free(B);
+	DestroyVector(C);
+	DestroyVector(A);
+	DestroyVector(B);
+	DestroyIterator(iter);
 	return 0;
 }

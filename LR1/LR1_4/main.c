@@ -5,7 +5,7 @@ int main(int argc, char** args) {
     request* r = parseArgs(argc, args);
     if(r->state != kS_OK) {
         logErrors(r->state);
-        return r->state;
+        return r->state;sdfsdfs
     }
     
     void (*handlers[4])(char*, char*) = {

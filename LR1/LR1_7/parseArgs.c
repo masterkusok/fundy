@@ -75,7 +75,6 @@ request* parseArgs(int argc, char** args) {
 			r->state = kE_FILE_NOT_EXIST;
 			return r;
 		}
-
 		r->outputFile = args[4];
 	} else {
 		r->outputFile = args[3];

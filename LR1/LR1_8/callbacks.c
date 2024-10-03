@@ -4,11 +4,16 @@ int fromBase(char num[99], int len, int base) {
 	int result = 0;
 	len--;
 	for (int i = len; i >= 0; i--) {
+		if (i == 0 && num[i] == '-') {
+			return -result;
+		}
 		int mult = 0;
 		if ('0' <= num[i] && num[i] <= '9') {
 			mult = num[i] - '0';
-		} else {
-			mult = num[i] - 7 - '0';
+		} else if ('A' <= num[i] && num[i] <= 'Z') {
+			mult = num[i] - 55;
+		} else if ('a' <= num[i] && num[i] <= 'z') {
+			mult = num[i] - 87;
 		}
 		result += pow(base, len - i) * mult;
 	}
@@ -55,7 +60,13 @@ kState Handle(char* inputFile, char* outputFile) {
 			continue;
 		}
 
-		if (ch >= '0' && ch <= '9') {
+		if (currentLen > 99) {
+			printf("Found too large lexema\n");
+			break;
+		}
+
+		if (currentLen == 0 && ch == '-') {
+		} else if (ch >= '0' && ch <= '9') {
 			if (ch - '0' > minBase) {
 				// Для каждого числа, ищем символ с максимальным ASCII-кодом - так мы сможем определить основание
 				// минимальной системы счисления
@@ -77,6 +88,24 @@ kState Handle(char* inputFile, char* outputFile) {
 
 		current[currentLen] = ch;
 		currentLen++;
+	}
+
+	if (currentLen != 0) {
+		int i = 0;
+		while (current[i] == '0' && i + 1 < currentLen) {
+			i++;
+		}
+
+		while (i < currentLen) {
+			fputc(current[i], out);
+			i++;
+		}
+		minBase++;
+		if (minBase == 1) {
+			fprintf(out, " 2 0\n");
+		}
+		int base10 = fromBase(current, currentLen, minBase);
+		fprintf(out, " %d %d\n", minBase, base10);
 	}
 
 	fclose(in);

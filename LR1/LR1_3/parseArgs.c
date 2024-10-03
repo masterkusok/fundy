@@ -27,7 +27,7 @@ kState parseDouble(char* input, double* output) {
 		index++;
 	}
 	if (input[index] != '.' || index == len) {
-		*output = result;
+		*output = result * negativeMult;
 		return code;
 	}
 
@@ -127,6 +127,10 @@ void LogErrors(kState state) {
 		}
 		case kE_INVALID_FLAG: {
 			printf("Invalid flag format\n");
+			break;
+		}
+		case kE_INVALID_INPUT: {
+			printf("Invalid input, please, enter valid float\n");
 			break;
 		}
 		default: {

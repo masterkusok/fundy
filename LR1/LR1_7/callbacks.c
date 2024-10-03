@@ -20,6 +20,7 @@ void HandleOptR(char* file1, char* file2, char* output) {
 			}
 			ch1 = fgetc(in1);
 		}
+
 		while (ch1 != ' ' && ch1 != '\t' && ch1 != '\n') {
 			if (ch1 == EOF) {
 				break;
@@ -102,6 +103,11 @@ void HandleOptA(char* file1, char* file2, char* output) {
 		char current[99];
 		int currentLen = 0;
 		while ((ch = fgetc(in)) != EOF) {
+			if (currentLen > 99) {
+				printf("Found lexema with length over 99\n");
+				currentLen = 0;
+				break;
+			}
 			if (ch != ' ' && ch != '\t' && ch != '\n') {
 				current[currentLen] = ch;
 				currentLen++;

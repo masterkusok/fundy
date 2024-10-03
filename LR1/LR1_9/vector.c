@@ -8,6 +8,11 @@ Vector* CreateVector(int initialCapacity) {
 	return v;
 }
 
+void DestroyVector(Vector* v) {
+	free(v->buffer);
+	free(v);
+};
+
 void PrintVector(Vector* v) {
 	for (int i = 0; i < v->len; i++) {
 		printf("%d ", v->buffer[i]);
@@ -43,6 +48,8 @@ Iterator* CreateIterator(Vector* v) {
 	iter->index = 0;
 	return iter;
 }
+
+void DestroyIterator(Iterator* iter) { free(iter); };
 
 bool IterIsLast(Iterator* iter) { return iter->index >= iter->v->len; }
 

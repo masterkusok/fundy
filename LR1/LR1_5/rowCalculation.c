@@ -12,7 +12,7 @@ double binpow(double base, int exp) {
 	return result;
 }
 
-long double factorial(int n) {
+long double factorial(long double n) {
 	long double result = 1.0;
 	while (n > 1) {
 		result *= n;
@@ -21,23 +21,37 @@ long double factorial(int n) {
 	return result;
 }
 
-long double doubleFactorial(int n) {
-	long double result = 1.0;
+long double logFactorial(long double n) {
+	long double result = 0.0;
 	while (n > 1) {
-		result *= (double)n;
+		result += log(n);
+		n--;
+	}
+	return result;
+}
+
+long double logDoubleFactorial(long double n) {
+	long double result = 0.0;
+	while (n > 1) {
+		result += log(n);
 		n -= 2;
 	}
 	return result;
 }
 
-kState calculateRow(double epsilon, long double (*func)(double x, int n), double x, long double* output) {
+kState calculateRow(double epsilon, int from, long double (*func)(double x, int n), double x, long double* output) {
 	long double sum = 0.0, current = 0.0;
-	int n = 0;
+	int n = from;
+
 	do {
 		current = func(x, n);
+		if (isinf(current)) {
+			return kME_TYPE_OVERFLOW;
+		}
 		sum += current;
 		n += 1;
-	} while (fabs(current) > epsilon && n < 170);
+	} while (fabsl(current) > epsilon && n < 170);
+
 	*output = sum;
 	return kS_OK;
 }
@@ -53,13 +67,23 @@ long double funcB(double x, int n) {
 }
 
 long double funcC(double x, int n) {
-	return binpow(3, 3 * n) * binpow(factorial(n), 3) * binpow(x, 2 * n) / factorial(3 * n);
+	long double log1 = 3 * n * log(3);
+	long double log2 = 3 * logFactorial(n);
+	long double log3 = 2 * n * log(x);
+	long double log4 = logFactorial(3 * n);
+
+	long double result = log1 + log2 + log3 - log4;
+
+	return exp(result);
 }
 
 long double funcD(double x, int n) {
-	long double result = doubleFactorial(2 * n - 1) * binpow(x, 2 * n) / doubleFactorial(2 * n);
+	long double log1 = logDoubleFactorial(2 * n - 1);
+	long double log2 = 2 * n * log(fabs(x));
+	long double log3 = logDoubleFactorial(2 * n);
+	double result = log1 + log2 - log3;
 	if (n % 2 == 0) {
-		return result;
+		return exp(result);
 	}
-	return -result;
+	return -exp(result);
 }

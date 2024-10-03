@@ -1,36 +1,48 @@
 #include "parseArgs.h"
 
-double parseDouble(char* input) {
+kState parseDouble(char* input, double* output) {
+	kState code = kS_OK;
 	double result = 0;
 	int index = 0, len = strlen(input);
+	int negativeMult = 1;
+	if (len == 0) {
+		*output = 0;
+		return code;
+	}
+
 	while (index < len) {
-		if ('0' > input[index] || input[index] > '9') {
+		if (result <= 0.00000001 && input[index] == '-') {
+			negativeMult *= -1;
+			index++;
+			continue;
+		}
+		if (input[index] == '.') {
 			break;
+		}
+		if ('0' > input[index] || input[index] > '9') {
+			return kE_INVALID_INPUT;
 		}
 		result *= 10;
 		result += input[index] - '0';
 		index++;
 	}
-
-	if (index == len) {
-		return result;
-	}
-
-	if (input[index] != '.') {
-		return result;
+	if (input[index] != '.' || index == len) {
+		*output = result;
+		return code;
 	}
 
 	index++;
 	double mult = 0.1;
 	while (index < len) {
 		if ('0' > input[index] || input[index] > '9') {
-			return result;
+			break;
 		}
 		result += (input[index] - '0') * mult;
 		mult *= 0.1;
 		index++;
 	}
-	return result;
+	*output = negativeMult * result;
+	return code;
 }
 
 kState ParseArgs(int argc, char** args, double* epsilon) {
@@ -38,8 +50,8 @@ kState ParseArgs(int argc, char** args, double* epsilon) {
 		return kE_INVALID_NUMBER_OF_ARGS;
 	}
 
-	*epsilon = parseDouble(args[1]);
-	return kS_OK;
+	kState code = parseDouble(args[1], epsilon);
+	return code;
 }
 
 void LogErrors(kState state) {
@@ -47,6 +59,10 @@ void LogErrors(kState state) {
 	switch (state) {
 		case kE_INVALID_NUMBER_OF_ARGS: {
 			printf("Invalid number of arguments provided\n");
+			break;
+		}
+		case kE_INVALID_INPUT: {
+			printf("Invalid input, please, enter valid float\n");
 			break;
 		}
 		default: {

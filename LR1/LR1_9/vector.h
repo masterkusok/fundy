@@ -17,11 +17,13 @@ typedef struct {
 } Iterator;
 
 Vector* CreateVector(int);
+void DestroyVector(Vector*);
 void VectorPush(Vector*, int);
 void PrintVector(Vector* v);
 int VectorPop(Vector*, Iterator*);
 
 Iterator* CreateIterator(Vector*);
+void DestroyIterator(Iterator*);
 bool IterIsLast(Iterator*);
 void IterNext(Iterator*);
 int IterValue(Iterator*);

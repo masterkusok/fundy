@@ -1,8 +1,11 @@
 #ifndef PARSING_H
 #define PARSING_H
 
+#include <string.h>
+
 #include "states.h"
 
-kSTATE parseArgs(int, char**, double*);
+kSTATE ParseArgs(int, char**, double*);
+void LogErrors(kSTATE);
 
 #endif

@@ -36,18 +36,6 @@ kState parseInt(char* input, int* output) {
 	return code;
 }
 
-int binpow(int base, int exp) {
-	int result = 1;
-	while (exp > 0) {
-		if (exp % 2 == 1) {
-			result *= base;
-		}
-		base *= base;
-		exp /= 2;
-	}
-	return result;
-}
-
 int ParseOpts(int argc, char** args, kOpts* result, int* optArgument) {
 	if (argc < 3) {
 		return kE_NOT_ENOUGH_ARGS;
@@ -120,11 +108,16 @@ void HandleErrors(int code) {
 }
 
 void HandleOptH(int arg) {
-	if (arg > 100) {
-		printf("no numbers found\n");
+	if (arg < 0) {
+		arg *= -1;
 	}
-	for (int i = 0; i < 101; i++) {
-		if (arg * i > 100) {
+	if (arg > 100 || arg == 0) {
+		printf("0\n");
+		return;
+	}
+
+	for (int i = 0; i <= 100; i++) {
+		if (arg * i > 100 || arg * i < 0) {
 			break;
 		}
 		printf("%d ", arg * i);
@@ -132,6 +125,10 @@ void HandleOptH(int arg) {
 }
 
 void HandleOptP(int arg) {
+	if (arg == 0) {
+		printf("Number %d is not compiste/prime\n", arg);
+		return;
+	}
 	for (int i = 2; i < arg; i++) {
 		if (arg % i == 0) {
 			printf("number is composite\n");
@@ -144,6 +141,9 @@ void HandleOptP(int arg) {
 void HandleOptS(int arg) {
 	char result[99];
 	int len = 0;
+	if (arg < 0) {
+		arg *= -1;
+	}
 	while (arg > 0) {
 		int digit = arg % 16;
 		if (digit < 10) {
@@ -161,21 +161,29 @@ void HandleOptS(int arg) {
 }
 
 void HandleOptE(int arg) {
+	if (arg < 1) {
+		printf("Invalid arg\n");
+	}
 	if (arg > 10) {
 		printf("argument exceeded the limit\n");
 		return;
 	}
 
 	for (int base = 1; base <= 10; ++base) {
-		printf("base %d: ", base);
+		printf("base %d\n:", base);
+		int current = base;
 		for (int exp = 1; exp <= arg; ++exp) {
-			printf("%d^%d = %d\t", base, exp, binpow(base, exp));
+			printf("%d^%d = %d\n", base, exp, current);
+			current *= base;
 		}
 		printf("\n");
 	}
 }
 
 void HandleOptA(int arg) {
+	if (arg < 0) {
+		printf("Invalid arg\n");
+	}
 	int s = (1 + arg) * arg / 2;
 	printf("%d\n", s);
 }
@@ -185,6 +193,7 @@ void HandleOptF(int arg) {
 		printf("%d is too big for calculating factorial\n", arg);
 		return;
 	}
+
 	if (arg < 0) {
 		printf("cannot calculate factorial of %d\n", arg);
 		return;
