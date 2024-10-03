@@ -1,17 +1,5 @@
 #include "rowCalculation.h"
 
-double binpow(double base, int exp) {
-	double result = 1.0;
-	while (exp > 0) {
-		if (exp % 2 == 1) {
-			result *= base;
-		}
-		base *= base;
-		exp /= 2;
-	}
-	return result;
-}
-
 long double factorial(long double n) {
 	long double result = 1.0;
 	while (n > 1) {
@@ -21,19 +9,10 @@ long double factorial(long double n) {
 	return result;
 }
 
-long double logFactorial(long double n) {
-	long double result = 0.0;
+long double doubleFactorial(int n) {
+	long double result = 1.0;
 	while (n > 1) {
-		result += log(n);
-		n--;
-	}
-	return result;
-}
-
-long double logDoubleFactorial(long double n) {
-	long double result = 0.0;
-	while (n > 1) {
-		result += log(n);
+		result *= (double)n;
 		n -= 2;
 	}
 	return result;
@@ -56,10 +35,10 @@ kState calculateRow(double epsilon, int from, long double (*func)(double x, int 
 	return kS_OK;
 }
 
-long double funcA(double x, int n) { return binpow(x, n) / factorial(n); }
+long double funcA(double x, int n) { return powl(x, n) / factorial(n); }
 
 long double funcB(double x, int n) {
-	long double result = binpow(x, (int)(2 * n)) / factorial(2 * n);
+	long double result = powl(x, (int)(2 * n)) / factorial(2 * n);
 	if (n % 2 == 0) {
 		return result;
 	}
@@ -67,23 +46,12 @@ long double funcB(double x, int n) {
 }
 
 long double funcC(double x, int n) {
-	long double log1 = 3 * n * log(3);
-	long double log2 = 3 * logFactorial(n);
-	long double log3 = 2 * n * log(x);
-	long double log4 = logFactorial(3 * n);
-
-	long double result = log1 + log2 + log3 - log4;
-
-	return exp(result);
+	return powl(3, 3 * n) * powl(factorial(n), 3) * powl(x, 2 * n) / factorial(3 * n);
 }
-
 long double funcD(double x, int n) {
-	long double log1 = logDoubleFactorial(2 * n - 1);
-	long double log2 = 2 * n * log(fabs(x));
-	long double log3 = logDoubleFactorial(2 * n);
-	double result = log1 + log2 - log3;
+	long double result = doubleFactorial(2 * n - 1) * powl(x, 2 * n) / doubleFactorial(2 * n);
 	if (n % 2 == 0) {
-		return exp(result);
+		return result;
 	}
-	return -exp(result);
+	return -result;
 }
