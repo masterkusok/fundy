@@ -1,10 +1,13 @@
 #ifndef CONSTANTCALCULATION_H
 #define CONSTANTCALCULATION_H
 
-#include<math.h>
-#include<stdbool.h>
+#define MAX_T 500
+
+#include <float.h>
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
-#include<float.h>
+#include <stdlib.h>
 
 // Limits calculation
 long double calculateLimit(double, long double (*)(int, long double));
@@ -22,13 +25,12 @@ long double calculateRowLn2(double);
 long double calculateRowSqrt2(double);
 long double calculateRowGamma(double);
 
-
 // Equatation calculation
-long double solveEquatation(double, long double (*) (long double), long double, long double);
+long double solveEquatation(double, long double (*)(long double), long double, long double);
 long double eEquatation(long double);
 long double sqrt2Equatation(long double);
 long double ln2Equatation(long double);
-long double piEquatation(long double x);
+long double piEquatation(long double);
 long double gammaEquatation(long double);
 
 #endif

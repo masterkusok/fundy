@@ -33,6 +33,6 @@ int main(int argc, char** args) {
 	printf("pi ~ %Lf\n", piEquatation(fault));
 	printf("ln2 ~ %Lf\n", solveEquatation(fault, ln2Equatation, 0.000001, 10.0));
 	printf("sqrt(2) ~ %Lf\n", solveEquatation(fault, sqrt2Equatation, 0.000001, 10.0));
-
+	printf("gamma ~ %Lf\n", solveEquatation(fault, gammaEquatation, 0.000001, 10.0));
 	return 0;
 }
