@@ -129,7 +129,7 @@ request* parseArgs(int argc, char** args) {
 
 	if (providedOutput) {
 		r->outputFile = args[3];
-		if (pathEquals(r->inputFile, r->outputFile)) {
+		if (pathEquals(r->inputFile, r->outputFile) || getFileName(r->inputFile) == getFileName(r->outputFile)) {
 			r->state = kE_EQUAL_PATHS;
 			return r;
 		}

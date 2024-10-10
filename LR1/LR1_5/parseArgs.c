@@ -2,8 +2,13 @@
 
 double parseDouble(char* input, kState* code) {
 	double result = 0;
+	double neg = 1;
 	int index = 0, len = strlen(input);
 	*code = kS_OK;
+	if (input[index] == '-') {
+		neg = -1;
+		index++;
+	}
 	while (index < len) {
 		if ('0' > input[index] || input[index] > '9') {
 			break;
@@ -14,7 +19,7 @@ double parseDouble(char* input, kState* code) {
 	}
 
 	if (index == len) {
-		return result;
+		return result * neg;
 	}
 
 	if (input[index] != '.') {
@@ -33,7 +38,7 @@ double parseDouble(char* input, kState* code) {
 		mult *= 0.1;
 		index++;
 	}
-	return result;
+	return result * neg;
 }
 
 kState parseArgs(int argc, char** args, double* epsilon, double* x) {
