@@ -1,38 +1,93 @@
-#include "constantCalculation.h"
+#include "equatationCalculation.h"
+#include "limitCalculation.h"
 #include "parsing.h"
+#include "rowCalculation.h"
 #include "stdio.h"
 
 int main(int argc, char** args) {
-	double fault;
-	int code = ParseArgs(argc, args, &fault);
+	double epsilon;
+	int code = ParseArgs(argc, args, &epsilon);
 	if (code != kS_OK) {
 		LogErrors(code);
 		return code;
 	}
 
-	printf("Calculation fault will be not more than %f\n", fault);
+	long double resultL;
+	printf("Calculation epsilon will be not more than %f\n", epsilon);
+	code = limitE(epsilon, &resultL);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("e ~ %Lf\n", resultL);
+	}
 
-	printf("Constant calculation, using limits:\n");
-	printf("e ~ %Lf\n", calculateLimit(fault, limitE));
-	printf("pi ~ %Lf\n", calculateLimit(fault, limitPi));
-	printf("ln2 ~ %Lf\n", calculateLimit(fault, limitLn2));
-	printf("sqrt(2) ~ %Lf\n", calculateLimit(fault, limitSqrt2));
-	printf("gamma ~ %Lf\n", calculateLimit(fault, limitGamma));
+	code = limitPi(epsilon, &resultL);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("pi ~ %Lf\n", resultL);
+	}
+
+	code = limitLn2(epsilon, &resultL);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("ln2 ~ %Lf\n", resultL);
+	}
+
+	code = limitSqrt2(epsilon, &resultL);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("sqrt(2) ~ %Lf\n", resultL);
+	}
+
+	code = limitGamma(epsilon, &resultL);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("gamma ~ %Lf\n", resultL);
+	}
+
 	printf("\n\n");
-
 	printf("Constant calculation, using rows:\n");
-	printf("e ~ %Lf\n", calculateRowE(fault));
-	printf("pi ~ %Lf\n", calculateRowPi(fault));
-	printf("ln2 ~ %Lf\n", calculateRowLn2(fault));
-	printf("sqrt(2) ~ %Lf\n", calculateRowSqrt2(fault));
-	printf("gamma ~ %Lf\n", calculateRowGamma(fault));
+	double result;
+	code = calculateRow(&result, 0, 1, rowDeltaE, epsilon);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("e ~ %lf\n", result);
+	}
+
+	code = calculateRow(&result, 1, 4, rowDeltaPi, epsilon);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("pi ~ %lf\n", result);
+	}
+
+	code = calculateRow(&result, 1, 1, rowDeltaLn2, epsilon);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("ln2 ~ %lf\n", result);
+	}
+
+	code = calculateSqrt2Row(&result, epsilon);
+	if (code != kS_OK) {
+		LogErrors(code);
+	} else {
+		printf("sqrt2 ~ %lf\n", result);
+	}
+
+	printf("gamma ~ %Lf\n", calculateRowGamma(epsilon));
 	printf("\n\n");
 
 	printf("Constant calculation, using equatations:\n");
-	printf("e ~ %Lf\n", solveEquatation(fault, eEquatation, 0.000001, 10.0));
-	printf("pi ~ %Lf\n", piEquatation(fault));
-	printf("ln2 ~ %Lf\n", solveEquatation(fault, ln2Equatation, 0.000001, 10.0));
-	printf("sqrt(2) ~ %Lf\n", solveEquatation(fault, sqrt2Equatation, 0.000001, 10.0));
-	printf("gamma ~ %Lf\n", solveEquatation(fault, gammaEquatation, 0.000001, 10.0));
+	printf("e ~ %Lf\n", solveEquatation(epsilon, eEquatation, 0.000001, 10.0));
+	printf("pi ~ %Lf\n", piEquatation(epsilon));
+	printf("ln2 ~ %Lf\n", solveEquatation(epsilon, ln2Equatation, 0.000001, 10.0));
+	printf("sqrt(2) ~ %Lf\n", solveEquatation(epsilon, sqrt2Equatation, 0.000001, 10.0));
+	printf("gamma ~ %Lf\n", solveEquatation(epsilon, gammaEquatation, 0.000001, 10.0));
 	return 0;
 }

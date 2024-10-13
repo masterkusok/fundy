@@ -6,6 +6,7 @@ typedef enum {
 	kE_NOT_ENOUGH_ARGS,
 	kE_TOO_MANY_ARGS,
 	kE_INVALID_INPUT,
+	kME_TYPE_OVERFLOW,
 } kSTATE;
 
 #endif

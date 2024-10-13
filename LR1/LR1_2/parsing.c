@@ -78,6 +78,10 @@ void LogErrors(kSTATE code) {
 			printf("invalid input, please, enter float\n");
 			break;
 		}
+		case kME_TYPE_OVERFLOW: {
+			printf("type overflow, try to decrease epsilon for this calculation\n");
+			break;
+		}
 		default: {
 			printf("unknown error code\n");
 			break;
