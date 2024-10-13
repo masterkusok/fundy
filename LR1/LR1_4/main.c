@@ -15,5 +15,6 @@ int main(int argc, char** args) {
 		HandleOptA,
 	};
 	handlers[r->option](r->inputFile, r->outputFile);
-	return 0;
+	destroyRequest(r);
+	return kS_OK;
 }

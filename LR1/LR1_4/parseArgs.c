@@ -1,5 +1,17 @@
 #include "parseArgs.h"
 
+void destroyRequest(request* req) { free(req); }
+
+bool sameFile(const char* path1, const char* path2) {
+	struct stat stat1, stat2;
+	stat(path1, &stat1);
+	stat(path2, &stat2);
+	if (stat1.st_ino == stat2.st_ino && stat1.st_dev == stat2.st_dev) {
+		return true;
+	}
+	return false;
+}
+
 double parseInt(char* input) {
 	double result = 0;
 	int index = 0, len = strlen(input);
@@ -22,21 +34,6 @@ bool fileExists(char* path) {
 		fclose(file);
 	}
 	return exists;
-}
-
-bool pathEquals(char* path1, char* path2) {
-	char *p1 = path1, *p2 = path2;
-	while (p1 || p2) {
-		if (*p1 != *p2) {
-			return false;
-		}
-		if (*p1 == '\0' || *p2 == '\0') {
-			return *p1 == '\0' && *p2 == '\0';
-		}
-		p1++;
-		p2++;
-	}
-	return true;
 }
 
 char* getFileName(char* path) {
@@ -129,7 +126,7 @@ request* parseArgs(int argc, char** args) {
 
 	if (providedOutput) {
 		r->outputFile = args[3];
-		if (pathEquals(r->inputFile, r->outputFile) || getFileName(r->inputFile) == getFileName(r->outputFile)) {
+		if (fileExists(r->outputFile) && sameFile(r->outputFile, r->inputFile)) {
 			r->state = kE_EQUAL_PATHS;
 			return r;
 		}

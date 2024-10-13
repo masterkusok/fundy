@@ -2,7 +2,7 @@
 
 long double factorial(int n) {
 	long double answ = 1.0;
-	for (long double i = 1; i <= n; i += 1.0) {
+	for (int i = 1; i <= n; i++) {
 		answ *= i;
 	}
 	return answ;
@@ -43,7 +43,7 @@ long double limitGamma(int n, long double prev) {
 long double calculateRowE(double fault) {
 	long double current = 1.0, prev = 1.0;
 	int n = 2;
-	current = prev + 1.0 / factorial(1);
+	current = 2.0;
 	while (fabsl(current - prev) > fault) {
 		prev = current;
 		current += 1.0 / factorial(n);
@@ -137,8 +137,8 @@ long double piEquatation(long double fault) {
 	long double currentX = 0.0;
 	long double currentF = 2.0;
 	do {
-		currentF = cos(currentX) + 1;
-		currentX += M_PI / 360.0;
+		currentF = cosl(currentX) + 1;
+		currentX += M_PI / 720.0;
 	} while (fabsl(currentF) > fault);
 	return currentX;
 }

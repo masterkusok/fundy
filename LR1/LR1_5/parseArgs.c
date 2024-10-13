@@ -66,7 +66,7 @@ void logErrors(kState state) {
 			break;
 		}
 		case kME_TYPE_OVERFLOW: {
-			printf("Target value is too large for long double, try do decrease epsilon\n");
+			printf("Target value is too large for long double, try do decrease epsilon or x\n");
 			break;
 		}
 		case kE_INVALID_ARG: {

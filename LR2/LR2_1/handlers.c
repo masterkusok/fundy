@@ -52,8 +52,8 @@ kState HandlerOptU(Input* input, char** output) {
 	}
 	out[length] = '\0';
 	for (int i = 0; i < length; i++) {
-		if (i % 2 == 1 && input->strings[0][i] <= 'Z' && input->strings[0][i] >= 'A') {
-			out[i] = input->strings[0][i] + 32;
+		if (i % 2 == 1 && input->strings[0][i] <= 'z' && input->strings[0][i] >= 'a') {
+			out[i] = input->strings[0][i] - 32;
 		} else {
 			out[i] = input->strings[0][i];
 		}

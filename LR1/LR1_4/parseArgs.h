@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 typedef enum {
 	kS_OK,
@@ -31,6 +32,7 @@ typedef struct {
 } request;
 
 request* parseArgs(int, char**);
+void destroyRequest(request*);
 void logErrors(kState);
 
 #endif

@@ -6,10 +6,12 @@
 #include "states.h"
 #include "stdio.h"
 
-kState calculateRow(double, int, long double (*)(double, int), double, long double*);
-long double funcA(double, int);
-long double funcB(double, int);
-long double funcC(double, int);
-long double funcD(double, int);
+unsigned long long int doubleFactorial(int n);
+unsigned long long int factorial(int n);
+kState calculateRow(double, int, kState (*)(double, int, long double*), double, long double*);
+kState funcA(double, int, long double*);
+kState funcB(double, int, long double*);
+kState funcC(double, int, long double*);
+kState funcD(double, int, long double*);
 
 #endif

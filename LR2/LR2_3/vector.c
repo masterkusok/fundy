@@ -1,8 +1,17 @@
 #include "vector.h"
 
-Vector* CreateVector(int initialCapacity) {
+Vector* CreateVector(int initialCapacity, kState* code) {
+	*code = kS_OK;
 	Vector* v = malloc(sizeof(Vector));
+	if (!v) {
+		*code = kE_BAD_ALLOCATION;
+		return NULL;
+	}
 	v->buffer = malloc(sizeof(int) * initialCapacity);
+	if (!v->buffer) {
+		*code = kE_BAD_ALLOCATION;
+		return NULL;
+	}
 	v->capacity = initialCapacity;
 	v->len = 0;
 	return v;
@@ -20,9 +29,12 @@ void PrintVector(Vector* v) {
 	printf("\n");
 }
 
-void VectorPush(Vector* v, int value) {
+kState VectorPush(Vector* v, int value) {
 	if (v->len + 1 >= v->capacity) {
 		int* newBuffer = malloc(v->capacity * sizeof(int) * 2);
+		if (!newBuffer) {
+			return kE_BAD_ALLOCATION;
+		}
 		for (int i = 0; i < v->len; i++) {
 			newBuffer[i] = v->buffer[i];
 		}
@@ -33,6 +45,7 @@ void VectorPush(Vector* v, int value) {
 	}
 	v->buffer[v->len] = value;
 	v->len++;
+	return kS_OK;
 }
 
 int VectorPop(Vector* v, Iterator* iter) {
@@ -41,22 +54,3 @@ int VectorPop(Vector* v, Iterator* iter) {
 	}
 	v->len--;
 }
-
-Iterator* CreateIterator(Vector* v) {
-	Iterator* iter = malloc(sizeof(Iterator));
-	iter->v = v;
-	iter->index = 0;
-	return iter;
-}
-
-void DestroyIterator(Iterator* iter) { free(iter); };
-
-bool IterIsLast(Iterator* iter) { return iter->index >= iter->v->len; }
-
-void IterNext(Iterator* iter) {
-	if (!IterIsLast(iter)) {
-		iter->index++;
-	}
-}
-
-int IterValue(Iterator* iter) { return iter->v->buffer[iter->index]; }

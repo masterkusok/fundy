@@ -67,7 +67,7 @@ void HandleOptS(char* input, char* output) {
 
 void writeInBase(int decimalNum, int base, FILE* output) {
 	int currentLen = 0;
-	char str[99];
+	char str[3];
 	while (decimalNum > 0) {
 		int currentDigit = decimalNum % base;
 		if (currentDigit <= 9) {

@@ -10,7 +10,7 @@ int main(int argc, char** args) {
 		return code;
 	}
 	long double result = 0.0;
-	long double (*callbacks[4])(double x, int n) = {funcA, funcB, funcC, funcD};
+	kState (*callbacks[4])(double, int, long double*) = {funcA, funcB, funcC, funcD};
 	int intervalStarts[4] = {0, 0, 0, 1};
 
 	printf("Counting Rows, epsilon=%lf, x=%lf\n", epsilon, x);
