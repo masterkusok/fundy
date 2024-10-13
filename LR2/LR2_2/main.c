@@ -30,9 +30,14 @@ int main(int argc, char** argv) {
 	printf("geometric mean is - %lf\n", result);
 
 	// test binpow
+	code = kS_OK;
 	long double base = 5.0;
-	int exponent = 10;
-
-	printf("binpow: %Lf^%d=%Lf\n", base, exponent, power(base, exponent));
+	int exponent = 500;
+	long double resultL = power(base, exponent, &code);
+	if (code != kS_OK) {
+		log_errors(code);
+		return code;
+	}
+	printf("binpow: %Lf^%d=%Lf\n", base, exponent, resultL);
 	return 0;
 }
