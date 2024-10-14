@@ -99,11 +99,11 @@ void convertFromDecimal(int num, int base, char *result) {
 	char buffer[50];
 	int index = 0;
 
-	do {
+	while (num > 0) {
 		int remainder = num % base;
 		buffer[index++] = (remainder < 10) ? (remainder + '0') : (remainder - 10 + 'A');
 		num /= base;
-	} while (num > 0);
+	}
 
 	for (int i = 0; i < index; i++) {
 		result[i] = buffer[index - i - 1];
@@ -139,7 +139,7 @@ bool isKaprekar(int num, kState *code) {
 	for (int i = 1; i < len; i++) {
 		int left = 0, right = 0;
 		char *leftSubstr = substring(squareStr, i, code);
-		if (code != kS_OK) {
+		if (*code != kS_OK) {
 			return false;
 		}
 		sscanf(leftSubstr, "%d", &left);
@@ -163,8 +163,13 @@ bool *findKaprekarNumbers(kState *code, int base, int numArgs, ...) {
 	for (int i = 0; i < numArgs; i++) {
 		const char *strNum = va_arg(args, const char *);
 		int decimalNum = parseToDecimal(strNum, base);
+		if (decimalNum < 0) {
+			*code = kE_INVALID_ARG;
+			free(kaprekars);
+			return NULL;
+		}
 		kaprekars[i] = isKaprekar(decimalNum, code);
-		if (code != kS_OK) {
+		if (*code != kS_OK) {
 			free(kaprekars);
 			return NULL;
 		}

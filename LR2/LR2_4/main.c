@@ -18,10 +18,10 @@ int main() {
 	if (code != kS_OK) {
 		return code;
 	}
-	
-	// for (int i = 0; i < 3; i++) {
-	// 	printf("%d\n", result[i]);
-	// }
+
+	for (int i = 0; i < 3; i++) {
+		printf("%d\n", result[i]);
+	}
 
 	return 0;
 }
