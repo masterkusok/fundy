@@ -55,17 +55,24 @@ bool isConvexPolygon(int numPoints, ...) {
 // k5 * x^5 + k4 * x^4 + k3 * x^3 + k2*x^2 + k1*x + k0  --- считаем таким спсобом
 // x(x(x(x(k5*x+k4) + k3) + k2) + k1) + k0
 
-double calculatePolynom(double x, int n, ...) {
+kState calculatePolynom(double *result, double x, int n, ...) {
 	va_list args;
 	va_start(args, n);
-	double current = va_arg(args, double);
+	double current = 0.0;
 	for (int i = 0; i <= n; i++) {
 		double k = va_arg(args, double);
 		current *= x;
+		if (current > DBL_MAX || current < -DBL_MAX) {
+			return kE_TYPE_OVERFLOW;
+		}
 		current += k;
+		if (current > DBL_MAX || current < -DBL_MAX) {
+			return kE_TYPE_OVERFLOW;
+		}
 	}
 	va_end(args);
-	return current;
+	*result = current;
+	return kS_OK;
 }
 
 // проверка чисел Капрекара
@@ -128,12 +135,12 @@ char *substring(const char *str, int index, kState *code) {
 	return result;
 }
 
-bool isKaprekar(int num, kState *code) {
+bool isKaprekar(int num, int base, kState *code) {
 	if (num == 1) return true;
 
 	int square = num * num;
 	char squareStr[50];
-	sprintf(squareStr, "%d", square);
+	convertFromDecimal(square, base, squareStr);
 
 	int len = strlen(squareStr);
 	for (int i = 1; i < len; i++) {
@@ -142,8 +149,9 @@ bool isKaprekar(int num, kState *code) {
 		if (*code != kS_OK) {
 			return false;
 		}
-		sscanf(leftSubstr, "%d", &left);
-		sscanf(squareStr + i, "%d", &right);
+		left = parseToDecimal(leftSubstr, base);
+		right = parseToDecimal(squareStr + i, base);
+
 		if (right > 0 && left + right == num) {
 			return true;
 		}
@@ -164,11 +172,11 @@ bool *findKaprekarNumbers(kState *code, int base, int numArgs, ...) {
 		const char *strNum = va_arg(args, const char *);
 		int decimalNum = parseToDecimal(strNum, base);
 		if (decimalNum < 0) {
-			*code = kE_INVALID_ARG;
+			*code = kE_INVALID_ARGUMENT;
 			free(kaprekars);
 			return NULL;
 		}
-		kaprekars[i] = isKaprekar(decimalNum, code);
+		kaprekars[i] = isKaprekar(decimalNum, base, code);
 		if (*code != kS_OK) {
 			free(kaprekars);
 			return NULL;
