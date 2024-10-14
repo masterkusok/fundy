@@ -1,9 +1,17 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include <bool.h>
+#include <limits.h>
 #include <stdarg.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-double calculatePolynom(double x, int n, ...);
+#include "states.h"
+
+bool isConvexPolygon(int, ...);
+double calculatePolynom(double, int, ...);
+bool* findKaprekarNumbers(kState*, int, int, ...);
 
 #endif

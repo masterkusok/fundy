@@ -102,7 +102,9 @@ kSTATE limitGamma(double precision, long double* result) {
 
 		m++;
 	} while (fabs(gamma - prev) > precision && m < 100);
-
+	if (fabsl(gamma) > 1.0) {
+		return kME_TYPE_OVERFLOW;
+	}
 	*result = gamma;
 	return kS_OK;
 }
