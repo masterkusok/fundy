@@ -22,17 +22,17 @@ int main(int argc, char** argv) {
 	kState code;
 	double result;
 
-	code = geometric_mean(&result, 3, 40000.0, 600000000.0, 8000000.0);
+	code = geometric_mean(&result, 3, 6.0, 8.0, 10.0);
 	if (code != kS_OK) {
 		log_errors(code);
 		return code;
 	}
-	printf("geometric mean is - %lf\n", result);
+	printf("geometric mean is: %lf\n", result);
 
 	// test binpow
 	code = kS_OK;
 	long double base = 5.0;
-	int exponent = 500;
+	int exponent = 10;
 	long double resultL = power(base, exponent, &code);
 	if (code != kS_OK) {
 		log_errors(code);

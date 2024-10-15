@@ -7,18 +7,18 @@ kState geometric_mean(double* result, int count, ...) {
 
 	for (int i = 0; i < count; i++) {
 		double num = va_arg(args, double);
-		product *= num;
+		if (num < 0.0) {
+			return kE_NEGATIVE_SQRT;
+		}
+		product *= pow(num, 1.0 / count);
 		if (product > DBL_MAX || product < -DBL_MAX) {
 			return kE_TYPE_OVERFLOW;
 		}
 	}
 
 	va_end(args);
-	if (product < 0.0) {
-		return kE_NEGATIVE_SQRT;
-	}
 
-	*result = pow(product, 1.0 / count);
+	*result = product;
 	return kS_OK;
 }
 
