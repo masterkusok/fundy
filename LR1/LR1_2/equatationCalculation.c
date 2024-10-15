@@ -24,21 +24,23 @@ long double solveEquatation(double fault, long double (*func)(long double x), lo
 // от 0.0001 до 10
 long double eEquatation(long double x) { return log(x) - 1.0; }
 
-// cosx + 1 = 0;
-long double piEquatation(long double fault) {
-	long double currentX = 0.0;
-	long double currentF = 2.0;
-	// первоначальный шаг в 1 rad;
-	long double step = M_PI / 360;
-	do {
-		currentF = cosl(currentX) + 1;
-		currentX += step;
-		if (currentF < 0.0 && step < 0.0 || currentF > 0.0 && step > 0.0) {
-			step *= -0.5;
-		}
-	} while (fabsl(currentF) > fault);
-	return currentX;
-}
+long double piEquatation(long double x) { return sinl(x); }
+
+// // cosx + 1 = 0;
+// long double piEquatation(long double fault) {
+// 	long double currentX = 0.0;
+// 	long double currentF = 2.0;
+// 	// первоначальный шаг в 1 rad;
+// 	long double step = M_PI / 360;
+// 	do {
+// 		currentF = cosl(currentX) + 1;
+// 		currentX += step;
+// 		if (currentF < 0.0 && step < 0.0 || currentF > 0.0 && step > 0.0) {
+// 			step *= -0.5;
+// 		}
+// 	} while (fabsl(currentF) > fault);
+// 	return currentX;
+// }
 // от 0.0001 до 10
 long double ln2Equatation(long double x) { return pow(M_E, x) - 2.0; }
 

@@ -85,7 +85,7 @@ int main(int argc, char** args) {
 
 	printf("Constant calculation, using equatations:\n");
 	printf("e ~ %Lf\n", solveEquatation(epsilon, eEquatation, 0.000001, 10.0));
-	printf("pi ~ %Lf\n", piEquatation(epsilon));
+	printf("pi ~ %Lf\n", solveEquatation(epsilon, piEquatation, M_PI / 4.0, 7.0 * M_PI / 4.0));
 	printf("ln2 ~ %Lf\n", solveEquatation(epsilon, ln2Equatation, 0.000001, 10.0));
 	printf("sqrt(2) ~ %Lf\n", solveEquatation(epsilon, sqrt2Equatation, 0.000001, 10.0));
 	printf("gamma ~ %Lf\n", solveEquatation(epsilon, gammaEquatation, 0.000001, 10.0));
