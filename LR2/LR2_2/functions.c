@@ -43,7 +43,7 @@ long double power(long double base, int exp, kState* error) {
 	if (*error) {
 		return 0.0;
 	}
-
+	
 	if (overflow(half)) {
 		*error = kE_TYPE_OVERFLOW;
 		return 0.0;

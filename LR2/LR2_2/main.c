@@ -31,8 +31,8 @@ int main(int argc, char** argv) {
 
 	// test binpow
 	code = kS_OK;
-	long double base = 5.0;
-	int exponent = 10;
+	long double base = -2.0;
+	int exponent = 3;
 	long double resultL = power(base, exponent, &code);
 	if (code != kS_OK) {
 		log_errors(code);

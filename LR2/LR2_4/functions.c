@@ -1,6 +1,27 @@
 #include "functions.h"
 
-double getRotateDirection(double ax, double ay, double bx, double by, double cx, double cy) {
+void logErrors(kState code) {
+	switch (code) {
+		case kE_INVALID_ARGUMENT: {
+			printf("error: invalid argument\n");
+			break;
+		}
+		case kE_TYPE_OVERFLOW: {
+			printf("error: type overflow\n");
+			break;
+		}
+		case kE_BAD_ALLOCATION: {
+			printf("error: bad malloc\n");
+			break;
+		}
+		default: {
+			printf("unknown error code\n");
+			break;
+		}
+	}
+}
+
+int getRotateDirection(double ax, double ay, double bx, double by, double cx, double cy) {
 	double abx = bx - ax;
 	double aby = by - ay;
 	double bcx = cx - bx;
@@ -20,18 +41,20 @@ bool isConvexPolygon(int numPoints, ...) {
 	va_list args;
 	va_start(args, numPoints);
 
-	double points[2 * (numPoints + 1)];
+	double points[2 * (numPoints + 2)];
 	for (int i = 0; i < 2 * numPoints; i++) {
 		points[i] = va_arg(args, double);
 	}
 
 	points[2 * numPoints] = points[0];
 	points[2 * numPoints + 1] = points[1];
+	points[2 * numPoints + 2] = points[2];
+	points[2 * numPoints + 3] = points[3];
 	va_end(args);
 
 	int currentDirection = getRotateDirection(points[0], points[1], points[2], points[3], points[4], points[5]);
 
-	for (int i = 0; i < numPoints - 2; i++) {
+	for (int i = 0; i < numPoints; i++) {
 		double ax = points[2 * i];
 		double ay = points[2 * i + 1];
 		double bx = points[2 * i + 2];
@@ -103,7 +126,7 @@ int parseToDecimal(const char *str, int base) {
 }
 
 void convertFromDecimal(int num, int base, char *result) {
-	char buffer[50];
+	char buffer[65];
 	int index = 0;
 
 	while (num > 0) {
@@ -139,7 +162,7 @@ bool isKaprekar(int num, int base, kState *code) {
 	if (num == 1) return true;
 
 	int square = num * num;
-	char squareStr[50];
+	char squareStr[65];
 	convertFromDecimal(square, base, squareStr);
 
 	int len = strlen(squareStr);
