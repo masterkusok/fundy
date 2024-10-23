@@ -46,6 +46,7 @@ bool checkFraction(int numerator, int denominator, int base) {
 	}
 	return true;
 }
+
 void doubleToFraction(double value, int* numerator, int* denominator, double tolerance) {
 	double fractionalPart = value;
 	int previousNumerator = 0, currentNumerator = 1;

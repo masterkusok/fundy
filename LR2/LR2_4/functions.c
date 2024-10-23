@@ -41,38 +41,38 @@ bool isConvexPolygon(int numPoints, ...) {
 	va_list args;
 	va_start(args, numPoints);
 
-	double points[2 * (numPoints + 2)];
-	for (int i = 0; i < 2 * numPoints; i++) {
-		points[i] = va_arg(args, double);
-	}
+	double x1, y1, x2, y2, x3, y3, firstX, firstY, secondX, secondY;
 
-	points[2 * numPoints] = points[0];
-	points[2 * numPoints + 1] = points[1];
-	points[2 * numPoints + 2] = points[2];
-	points[2 * numPoints + 3] = points[3];
-	va_end(args);
+	x1 = firstX = va_arg(args, double);
+	y1 = firstY = va_arg(args, double);
+	x2 = secondX = va_arg(args, double);
+	y2 = secondY = va_arg(args, double);
+	x3 = va_arg(args, double);
+	y3 = va_arg(args, double);
 
-	int currentDirection = getRotateDirection(points[0], points[1], points[2], points[3], points[4], points[5]);
+	int currentDirection = getRotateDirection(x1, y1, x2, y2, x3, y3);
 
-	for (int i = 0; i < numPoints; i++) {
-		double ax = points[2 * i];
-		double ay = points[2 * i + 1];
-		double bx = points[2 * i + 2];
-		double by = points[2 * i + 3];
-		double cx = points[2 * i + 4];
-		double cy = points[2 * i + 5];
-
-		int dir = getRotateDirection(ax, ay, bx, by, cx, cy);
+	for (int i = 3; i < numPoints; i++) {
+		x1 = x2;
+		x2 = x3;
+		y1 = y2;
+		y2 = y3;
+		x3 = va_arg(args, double);
+		y3 = va_arg(args, double);
+		int dir = getRotateDirection(x1, y1, x2, y2, x3, y3);
 
 		if (dir == 0) {
 			continue;
 		}
 		if (dir != currentDirection) {
+			va_end(args);
 			return false;
 		}
 	}
+	va_end(args);
 
-	return true;
+	return getRotateDirection(x2, y2, x3, y3, firstX, firstY) == currentDirection &&
+		   getRotateDirection(x3, y3, firstX, firstY, secondX, secondY) == currentDirection;
 }
 
 // k5 * x^5 + k4 * x^4 + k3 * x^3 + k2*x^2 + k1*x + k0  --- считаем таким спсобом

@@ -218,10 +218,114 @@ int oversprintf(char* str, char* format, ...) {
 void overfprintf(FILE* out, char* format, ...) {
 	va_list args;
 	va_start(args, format);
-	char* result;
+	char* p = format;
+	char buffer[1024];
+	int total_chars = 0;
+	char str[1024];
+	while (*p) {
+		if (*p == '%' && *(p + 1)) {
+			p++;
+			if (*p == 'R' && *(p + 1) == 'o') {
+				p += 2;
+				int num = va_arg(args, int);
+				int size = 0;
+				char roman[100];
+				intToRoman(num, roman);
+				total_chars += sprintf(str + total_chars, "%s", roman);
 
-	oversprintf(result, format, args);
-	fprintf(out, "%s", result);
+			} else if (*p == 'Z' && *(p + 1) == 'r') {
+				unsigned int num = va_arg(args, unsigned int);
+				char* zeckendorfNum = zeckendorf(num);
+				total_chars += sprintf(str + total_chars, "%s", zeckendorfNum);
+				p += 2;
 
+			} else if (*p == 'C' && *(p + 1) == 'v') {
+				p += 2;
+				int num = va_arg(args, int);
+				int base = va_arg(args, int);
+				if (base < 2 || base > 36) {
+					base = 10;
+				}
+				char result[100];
+				char* ptr = result + sizeof(result) - 1;
+				*ptr = '\0';
+				do {
+					int currentDigit = num % base;
+					if (currentDigit < 10) {
+						*--ptr = '0' + currentDigit;
+					} else {
+						*--ptr = 'a' + currentDigit - 10;
+					}
+					num /= base;
+				} while (num);
+				total_chars += sprintf(str + total_chars, "%s", ptr);
+			} else if (*p == 'C' && *(p + 1) == 'V') {
+				p += 2;
+				int num = va_arg(args, int);
+				int base = va_arg(args, int);
+				if (base < 2 || base > 36) {
+					base = 10;
+				}
+				char result[100];
+				char* ptr = result + sizeof(result) - 1;
+				*ptr = '\0';
+
+				do {
+					int currentDigit = num % base;
+					if (currentDigit < 10) {
+						*--ptr = '0' + currentDigit;
+					} else {
+						*--ptr = 'A' + currentDigit - 10;
+					}
+					num /= base;
+				} while (num);
+
+				total_chars += sprintf(str + total_chars, "%s", ptr);
+			} else if (*p == 't' && *(p + 1) == 'o') {
+				p += 2;
+				char* arg = va_arg(args, char*);
+				int base = va_arg(args, int);
+				int decimal = toDecimal(arg, base, false);
+				total_chars += sprintf(str + total_chars, "%d", decimal);
+			} else if (*p == 'T' && *(p + 1) == 'O') {
+				p += 2;
+				char* arg = va_arg(args, char*);
+				int base = va_arg(args, int);
+				int decimal = toDecimal(arg, base, true);
+				total_chars += sprintf(str + total_chars, "%d", decimal);
+			} else if (*p == 'm') {
+				p++;
+				MemoryDump md;
+				if (*p == 'i') {
+					md.i = (int8_t)va_arg(args, int);
+				} else if (*p == 'u') {
+					md.u = (uint8_t)va_arg(args, int);
+				} else if (*p == 'd') {
+					md.d = va_arg(args, double);
+				} else if (*p == 'f') {
+					md.f = (float)va_arg(args, double);
+				}
+				char output[4];
+				memoryDumpToString(md.bytes, 4, output);
+				total_chars += sprintf(str + total_chars, "%s", output);
+			} else {
+				char* start = p - 1;
+				while (*p && !strchr("diouxXeEfFgGaAcspn%", *p)) {
+					p++;
+				}
+				if (*p) {
+					p++;
+					strncpy(buffer, start, p - start);
+					buffer[p - start] = '\0';
+					total_chars += vsprintf(str + total_chars, buffer, args);
+				}
+			}
+		} else {
+			str[total_chars++] = *p;
+			p++;
+		}
+	}
+	str[total_chars] = '\0';
 	va_end(args);
+	fprintf(out, "%s", str);
 }
