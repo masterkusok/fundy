@@ -2,6 +2,7 @@
 
 int main() {
 	char* result;
-	overfprintf(stdout, "%ZrVZVZVZZVVZVZ ZOV ZOV ZOV VZZVZVZVZV\n\n\n\n ZZZ VZVZVV", 123);
+	oversprintf(result, "%Zr", 88, 16);
+    printf(result);
 	return 0;
 }
