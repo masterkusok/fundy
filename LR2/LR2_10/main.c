@@ -57,8 +57,11 @@ int main() {
     int n = 2;
     double epsilon = 1e-6;
     double a = 1.0;
-    double result[3];
-
+    double* result = malloc((n+1) * sizeof(double));
+    if(!result) {
+        logErrors(kE_BAD_ALLOC);
+        return kE_BAD_ALLOC;
+    }
     kState code = decomposePolynomial(epsilon, a, result, n, 2.0, 3.0, 4.0);
     if (code != kS_OK) {
         logErrors(code);
@@ -68,6 +71,6 @@ int main() {
     for (int i = 0; i <= n; i++) {
         printf("g%d = %f\n", i, result[i]);
     }
-
-    return 0;
+    free(result);
+    return kS_OK;
 }
