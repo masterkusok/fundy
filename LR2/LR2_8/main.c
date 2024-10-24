@@ -31,6 +31,7 @@ kState sumBigNumbers(BigNumber **result, int base, int count, ...) {
             DestroyBigNumber(current);
             return code;
         }
+        DestroyBigNumber(current);
     }
 
     va_end(args);
@@ -45,5 +46,6 @@ int main() {
         return code;
     }
     PrintBigNumber(result);
+    DestroyBigNumber(result);
     return kS_OK;
 }
