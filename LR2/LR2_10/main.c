@@ -18,17 +18,6 @@ double derivative(int i, double a, int n, const double *coeffs) {
     return result;
 }
 
-unsigned long long int factorial(int n) {
-    if (n == 0) {
-        return 1;
-    }
-    unsigned long long int result = 1;
-    for (int i = 2; i <= n; i++) {
-        result *= i;
-    }
-    return result;
-}
-
 kState decomposePolynomial(double epsilon, double a, double *result, int n, ...) {
     if (!result) return -1;
     va_list args;
@@ -42,8 +31,12 @@ kState decomposePolynomial(double epsilon, double a, double *result, int n, ...)
     }
     va_end(args);
 
+    double factorial = 1.0;
     for (int i = 0; i <= n; i++) {
-        result[i] = derivative(i, a, n, coeffs) / (double) factorial(i);
+        if (i != 0) {
+            factorial *= (double) i;
+        }
+        result[i] = derivative(i, a, n, coeffs) / factorial;
         if (fabs(result[i]) < epsilon) {
             result[i] = 0.0;
         }
