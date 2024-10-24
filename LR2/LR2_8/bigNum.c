@@ -15,7 +15,7 @@ char valueToChar(int value) {
 
 void PrintBigNumber(BigNumber *bigNumber) {
     for (int i = (int) bigNumber->len - 1; i >= 0; i--) {
-        printf("%c", valueToChar(bigNumber->buffer[i]));  // Исправлено: нужно использовать "%c" для вывода символов
+        printf("%c", valueToChar(bigNumber->buffer[i]));
     }
     printf("\n");
 }
@@ -45,7 +45,7 @@ BigNumber *CreateBigNumber(const char *str, int base) {
     }
 
     for (int i = 0; i < len; i++) {
-        int value = charToValue(str[len - i - 1]);  // Исправлено: нужно преобразовать строку в обратном порядке
+        int value = charToValue(str[len - i - 1]);
         if (value >= base || value < 0) {
             DestroyBigNumber(result);
             return NULL;
