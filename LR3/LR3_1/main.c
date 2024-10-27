@@ -28,6 +28,27 @@ void logErrors(kState code) {
     }
 }
 
+unsigned int bitwiseIncrement(unsigned int n) {
+    unsigned int mask = 1;
+    while (n & mask) {
+        n = n ^ mask;
+        mask <<= 1;
+    }
+    n = n ^ mask;
+    return n;
+}
+
+unsigned int bitwiseDecrement(unsigned int n) {
+    unsigned int mask = 1;
+    while (!(n & mask)) {
+        n = n ^ mask;
+        mask <<= 1;
+    }
+    n = n ^ mask;
+    return n;
+}
+
+
 char* decimalToBase2r(unsigned int number, unsigned short r, kState* code) {
     if (r > 5 || r < 1) {
         *code = kE_INVALID_ARGS;
@@ -35,30 +56,31 @@ char* decimalToBase2r(unsigned int number, unsigned short r, kState* code) {
     }
     *code = kS_OK;
     unsigned int base = 1 << r;
-    unsigned int mask = base - 1;
+    unsigned int mask = bitwiseDecrement(base);
 
     char* result = malloc(sizeof(char) * 65);
     if (!result) {
         *code = kE_BAD_ALLOCATION;
         return NULL;
     }
-    int index = 0;
+    unsigned int index = 0;
     char* chars = "0123456789abcdefghijklmnopqrstuv";
 
     while (number > 0) {
-        result[index++] = chars[(number & mask)];
+        result[index] = chars[(number & mask)];
+        index = bitwiseIncrement(index);
         number >>= r;
     }
 
     result[index] = '\0';
     int left = 0;
-    int right = index - 1;
+    int right = bitwiseDecrement(index);
     while(left < right) {
         char temp = result[right];
         result[right] = result[left];
         result[left] = temp;
-        left++;
-        right--;
+        left = bitwiseIncrement(left);
+        right = bitwiseDecrement(right);
     }
     return result;
 }
@@ -66,7 +88,7 @@ char* decimalToBase2r(unsigned int number, unsigned short r, kState* code) {
 int main() {
     char* result;
     unsigned int number = 63;
-    unsigned short r = 3;
+    unsigned short r = 1;
     kState code = kS_OK;
     result = decimalToBase2r(number, r, &code);
     if (code != kS_OK) {
