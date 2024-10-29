@@ -38,6 +38,16 @@ kState ParseFile(const char *path, Vector *result) {
     return kS_OK;
 }
 
+kState WriteResult(Vector *v, const char *path) {
+    FILE *out = fopen(path, "w");
+    if (!out) {
+        return kE_CANNOT_OPEN_FILE;
+    }
+    FprintVector(v, out);
+    fclose(out);
+    return kS_OK;
+}
+
 int descendingComp(const void *a, const void *b) {
     const Employee *first = *((const Employee **) a);
     const Employee *second = *((const Employee **) b);
@@ -83,8 +93,10 @@ int main(int argc, char **argv) {
     }
 
     Vector *vector = CreateVector(2);
-    kState code = ParseFile(args->Path, vector);
+    kState code = ParseFile(args->InputPath, vector);
     if (code != kS_OK) {
+        DestroyVector(vector);
+        free(args);
         return code;
     }
 
@@ -93,7 +105,12 @@ int main(int argc, char **argv) {
     comparators[kOptD] = descendingComp;
 
     SortVector(vector, comparators[args->Option]);
-    PrintVector(vector);
+    code = WriteResult(vector, args->OutputPath);
+    if (code != kS_OK) {
+        DestroyVector(vector);
+        free(args);
+        return code;
+    }
     DestroyVector(vector);
     free(args);
     return 0;

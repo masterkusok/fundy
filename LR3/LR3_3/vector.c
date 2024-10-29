@@ -24,9 +24,9 @@ void DestroyVector(Vector* v) {
     free(v);
 };
 
-void PrintVector(Vector* v) {
+void FprintVector(Vector* v, FILE* out) {
     for (int i = 0; i < v->len; i++) {
-        printf("%lu %s %s %lf\n", v->buffer[i]->ID, v->buffer[i]->Name,
+        fprintf(out, "%lu %s %s %lf\n", v->buffer[i]->ID, v->buffer[i]->Name,
                v->buffer[i]->Surname, v->buffer[i]->Salary);
     }
 }

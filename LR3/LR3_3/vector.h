@@ -15,7 +15,7 @@ typedef int (*ComparatorCallback) (const void*, const void*);
 
 Vector* CreateVector(int);
 kState VectorPush(Vector*, Employee*);
-void PrintVector(Vector*);
+void FprintVector(Vector*, FILE*);
 void SortVector(Vector*, ComparatorCallback);
 void DestroyVector(Vector*);
 

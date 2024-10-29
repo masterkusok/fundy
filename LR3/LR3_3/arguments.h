@@ -16,6 +16,7 @@ typedef enum {
     kE_INVALID_NUMBER_OF_ARGS,
     kE_UNKNOWN_FLAG,
     kE_INVALID_PATH,
+    kE_SAME_IO_PATH,
     kE_CANNOT_OPEN_FILE,
     KE_VALIDATION_ERROR,
     kE_PARSING_ERROR,
@@ -24,9 +25,10 @@ typedef enum {
 typedef struct {
     kState State;
     kOption Option;
-    char* Path;
+    char *InputPath;
+    char *OutputPath;
 } Args;
 
-Args* ParseArgs(int, char**);
+Args *ParseArgs(int, char **);
 
 #endif
