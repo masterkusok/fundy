@@ -46,6 +46,20 @@ kState decomposePolynomial(double epsilon, double a, double *result, int n, ...)
     return kS_OK;
 }
 
+double countAt(double* coeffs1, double* coeffs2, int n, double x, double a) {
+    double result1 = 0.0;
+    double result2 = 0.0;
+    double x1 = 1.0;
+    double x2 = 1.0;
+    for(int i = 0; i < n; i++) {
+        result1 += x1 * coeffs1[i];
+        result2 += x2 * coeffs2[i];
+        x1 *= x;
+        x2 *= (x - a);
+    }
+    printf("%d\n%d\n");
+}
+
 int main() {
     int n = 2;
     double epsilon = 1e-6;
@@ -64,6 +78,9 @@ int main() {
     for (int i = 0; i <= n; i++) {
         printf("g%d = %f\n", i, result[i]);
     }
+    double arr[3] = {2.0, 3.0, 4.0};
+    countAt(arr, result, n, 3, a);
+
     free(result);
     return kS_OK;
 }

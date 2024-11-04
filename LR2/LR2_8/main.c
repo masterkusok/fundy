@@ -41,7 +41,7 @@ kState sumBigNumbers(BigNumber **result, int base, int count, ...) {
 
 int main() {
     BigNumber *result;
-    kState code = sumBigNumbers(&result, 16, 3, "1A", "F", "23");
+    kState code = sumBigNumbers(&result, 2, 3, "101", "11", "0");
     if (code != kS_OK) {
         return code;
     }
