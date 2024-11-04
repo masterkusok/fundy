@@ -3,26 +3,24 @@
 #include "mail.h"
 #include "post.h"
 
-#define MAX_STRING_SIZE 256
-
 Address *inputAddressData() {
-    char city[MAX_STRING_SIZE];
-    char street[MAX_STRING_SIZE];
-    char building[MAX_STRING_SIZE];
+    char *city;
+    char *street;
+    char *building;
     char postIndex[7];
     unsigned short house, flat;
 
     printf("Введите город получателя: ");
-    scanf("%s", city);
+    scanf("%ms", &city);
 
     printf("Введите улицу получателя: ");
-    scanf("%s", street);
+    scanf("%ms", &street);
 
     printf("Введите номер дома: ");
     scanf("%hd", &house);
 
     printf("Введите корпус (если есть): ");
-    scanf("%s", building);
+    scanf("%ms", &building);
 
     printf("Введите номер квартиры: ");
     scanf("%hd", &flat);
@@ -82,12 +80,10 @@ void interactiveDialog(Post *post) {
                 Mail *mail = inputMailData();
                 if (!mail) {
                     printf("Ошибка при добавлении отправления.\n");
-                }
-                else if (!ValidateMail(mail)) {
+                } else if (!ValidateMail(mail)) {
                     DestroyMail(mail);
                     printf("Введены некорректные данные\n");
-                }
-                else {
+                } else {
                     VectorPush(post->Mails, mail);
                     printf("Почта успешно добавлена.\n");
                 }
@@ -128,14 +124,14 @@ void interactiveDialog(Post *post) {
 }
 
 int main(void) {
-    if (freopen("../input.txt", "r", stdin) == NULL) {
-        perror("Ошибка открытия файла");
+    Address *postAddress = inputAddressData();
+    if (!ValidateAddress(postAddress)) {
+        DestroyAddress(postAddress);
+        printf("Введён неверный почтовый адресс...\n");
         return 1;
     }
-    Address *postAddress = inputAddressData();
     Post *post = CreatePost(postAddress);
     interactiveDialog(post);
     DestroyPost(post);
-    fclose(stdin);
     return 0;
 }

@@ -80,10 +80,26 @@ int main(void) {
     DimensionVector *v2 = NewDimensionVector(3, 15.0, 22.0, 33.0);
     DimensionVector *v3 = NewDimensionVector(3, 1.0, 2.0, 33.0);
     kState code;
-    int numberOfNormas = 2;
+    int numberOfNormas = 3;
     int numberOfVectors = 3;
     int p = 1;
-    Vector **result = GetMaxNorma(&code, 3, numberOfVectors, numberOfNormas, v1, v2, v3, MaxNorma, NULL, SumNorma, &p);
+
+    double **A = malloc(sizeof(double*) * 3);
+    A[0] = malloc(sizeof(double) * 3);
+    A[0][0] = 10;
+    A[0][1] = 10;
+    A[0][2] = 20;
+    A[1] = malloc(sizeof(double) * 3);
+    A[1][0] = 1;
+    A[1][1] = 1;
+    A[1][2] = 1;
+    A[2] = malloc(sizeof(double) * 3);
+    A[2][0] = 1;
+    A[2][1] = 1;
+    A[2][2] = 0;
+
+    Vector **result = GetMaxNorma(&code, 3, numberOfVectors, numberOfNormas, v1, v2, v3, MaxNorma, NULL, SumNorma, &p,
+                                  MatrixNorma, A);
     if (code != kS_OK) {
         DestroyDimensionVector(v1);
         DestroyDimensionVector(v2);

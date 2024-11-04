@@ -4,23 +4,18 @@
 #include "vector.h"
 #include "arguments.h"
 
-#define DEFAULT_BUFFER_SIZE 512
-
 kState ParseFile(const char *path, Vector *result) {
     FILE *in = fopen(path, "r");
     if (!in) {
         return kE_CANNOT_OPEN_FILE;
     }
-    char buffer[DEFAULT_BUFFER_SIZE];
-    while (fgets(buffer, DEFAULT_BUFFER_SIZE, in)) {
-        uint64_t id;
-        char name[128];
-        char surname[128];
-        double salary;
-        if (sscanf(buffer, "%lu %s %s %lf", &id, name, surname, &salary) != 4) {
-            fclose(in);
-            return kE_PARSING_ERROR;
-        }
+    uint64_t id;
+    char *name;
+    char *surname;
+    double salary;
+
+
+    while (fscanf(in, "%lu %ms %ms %lf", &id, &name, &surname, &salary) == 4) {
         Employee *employee = NewEmployee(id, name, surname, salary);
         if (!employee) {
             fclose(in);
@@ -32,6 +27,11 @@ kState ParseFile(const char *path, Vector *result) {
             return KE_VALIDATION_ERROR;
         }
         VectorPush(result, employee);
+    }
+
+    if (fscanf(in, "%lu %ms %ms %lf", &id, &name, &surname, &salary) != EOF) {
+        fclose(in);
+        return kE_PARSING_ERROR;
     }
 
     fclose(in);

@@ -51,13 +51,13 @@ double countAt(double* coeffs1, double* coeffs2, int n, double x, double a) {
     double result2 = 0.0;
     double x1 = 1.0;
     double x2 = 1.0;
-    for(int i = 0; i < n; i++) {
+    for(int i = 0; i <= n; i++) {
         result1 += x1 * coeffs1[i];
         result2 += x2 * coeffs2[i];
         x1 *= x;
         x2 *= (x - a);
     }
-    printf("%d\n%d\n");
+    printf("%lf\n%lf\n", result1, result2);
 }
 
 int main() {

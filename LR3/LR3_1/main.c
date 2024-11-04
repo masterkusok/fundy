@@ -28,7 +28,7 @@ void logErrors(kState code) {
     }
 }
 
-unsigned int bitwiseIncrement(unsigned int n) {
+int bitwiseIncrement(int n) {
     unsigned int mask = 1;
     while (n & mask) {
         n = n ^ mask;
@@ -38,7 +38,7 @@ unsigned int bitwiseIncrement(unsigned int n) {
     return n;
 }
 
-unsigned int bitwiseDecrement(unsigned int n) {
+int bitwiseDecrement(int n) {
     unsigned int mask = 1;
     while (!(n & mask)) {
         n = n ^ mask;
@@ -48,12 +48,12 @@ unsigned int bitwiseDecrement(unsigned int n) {
     return n;
 }
 
-
-char* decimalToBase2r(unsigned int number, unsigned short r, kState* code) {
+char* decimalToBase2r(int number, unsigned short r, kState* code) {
     if (r > 5 || r < 1) {
         *code = kE_INVALID_ARGS;
         return NULL;
     }
+
     *code = kS_OK;
     unsigned int base = 1 << r;
     unsigned int mask = bitwiseDecrement(base);
@@ -63,27 +63,45 @@ char* decimalToBase2r(unsigned int number, unsigned short r, kState* code) {
         *code = kE_BAD_ALLOCATION;
         return NULL;
     }
+
     unsigned int index = 0;
     char* chars = "0123456789abcdefghijklmnopqrstuv";
 
-    while (number > 0) {
-        result[index] = chars[(number & mask)];
+    unsigned int absNumber;
+    if (number < 0) {
+        absNumber = bitwiseIncrement(~number);
+        result[index] = '-';
         index = bitwiseIncrement(index);
-        number >>= r;
+    } else {
+        absNumber = number;
+    }
+
+    while (absNumber > 0) {
+        result[index] = chars[(absNumber & mask)];
+        index = bitwiseIncrement(index);
+        absNumber >>= r;
+    }
+
+    if (index == 0 || (number == 0 && index == 1)) {
+        result[index] = '0';
+        index = bitwiseIncrement(index);
     }
 
     result[index] = '\0';
-    int left = 0;
+
+    int left = (number < 0) ? 1 : 0;
     int right = bitwiseDecrement(index);
-    while(left < right) {
+    while (left < right) {
         char temp = result[right];
         result[right] = result[left];
         result[left] = temp;
         left = bitwiseIncrement(left);
         right = bitwiseDecrement(right);
     }
+
     return result;
 }
+
 
 int main() {
     char* result;
