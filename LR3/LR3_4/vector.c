@@ -28,19 +28,9 @@ void DestroyVector(Vector *v) {
 
 int compareMail(Mail *m1, Mail *m2) {
     if (StringEqual(m1->Receiver->PostIndex, m2->Receiver->PostIndex)) {
-        if (StringEqual(m1->ID, m2->ID)) {
-            return 0;
-        }
-        if (StringLess(m1->ID, m2->ID)) {
-            return -1;
-        }
-        return 1;
+        return StringComp(m1->ID, m2->ID);
     }
-    if (StringLess(m1->Receiver->PostIndex, m2->Receiver->PostIndex)) {
-        return -1;
-    } else {
-        return 1;
-    }
+    return StringComp(m1->Receiver->PostIndex, m2->Receiver->PostIndex);
 }
 
 bool VectorPush(Vector *v, Mail *value) {

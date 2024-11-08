@@ -129,6 +129,7 @@ Mail *CreateMail(Address *address, double weight, char *id, char *create, char *
     if (!result) {
         return NULL;
     }
+    result->Delivered = false;
     result->Receiver = address;
     result->Weight = weight;
     result->ID = NewString(id);
@@ -139,23 +140,16 @@ Mail *CreateMail(Address *address, double weight, char *id, char *create, char *
 
 void DestroyAddress(Address *a) {
     DeleteString(a->PostIndex);
-    free(a->PostIndex);
     DeleteString(a->Street);
-    free(a->Street);
     DeleteString(a->City);
-    free(a->City);
     DeleteString(a->Building);
-    free(a->Building);
     free(a);
 }
 
 void DestroyMail(Mail *m) {
     DestroyAddress(m->Receiver);
     DeleteString(m->ID);
-    free(m->ID);
     DeleteString(m->CreationTime);
-    free(m->CreationTime);
     DeleteString(m->ReceiveTime);
-    free(m->ReceiveTime);
     free(m);
 }

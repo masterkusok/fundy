@@ -122,6 +122,10 @@ int main(void) {
     DestroyDimensionVector(v2);
     DestroyDimensionVector(v3);
     FreeVectors(result, numberOfNormas);
+    free(A[0]);
+    free(A[1]);
+    free(A[2]);
+    free(A);
 
     return 0;
 }

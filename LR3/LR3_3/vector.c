@@ -8,6 +8,7 @@ Vector* CreateVector(int initialCapacity) {
 
     v->buffer = malloc(sizeof(Employee*) * initialCapacity);
     if (!v->buffer) {
+        free(v);
         return NULL;
     }
 
@@ -49,8 +50,6 @@ kState VectorPush(Vector* v, Employee* value) {
     v->len++;
     return kS_OK;
 }
-
-
 
 void SortVector(Vector* v, ComparatorCallback callback) {
     qsort(v->buffer, v->len, sizeof(Employee*), callback);

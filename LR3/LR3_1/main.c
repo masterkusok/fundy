@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef enum {
     kS_OK,
@@ -48,48 +49,42 @@ int bitwiseDecrement(int n) {
     return n;
 }
 
-char* decimalToBase2r(int number, unsigned short r, kState* code) {
+char *decimalToBase2r(int number, unsigned short r, kState *code) {
     if (r > 5 || r < 1) {
         *code = kE_INVALID_ARGS;
         return NULL;
     }
 
+    int neg = 0;
+    if (number < 0) {
+        neg = 1;
+        number = fabs(number);
+    }
     *code = kS_OK;
     unsigned int base = 1 << r;
     unsigned int mask = bitwiseDecrement(base);
 
-    char* result = malloc(sizeof(char) * 65);
+    char *result = malloc(sizeof(char) * 66);
     if (!result) {
         *code = kE_BAD_ALLOCATION;
         return NULL;
     }
-
     unsigned int index = 0;
-    char* chars = "0123456789abcdefghijklmnopqrstuv";
+    char *chars = "0123456789abcdefghijklmnopqrstuv";
 
-    unsigned int absNumber;
-    if (number < 0) {
-        absNumber = bitwiseIncrement(~number);
+    while (number > 0) {
+        result[index] = chars[(number & mask)];
+        index = bitwiseIncrement(index);
+        number >>= r;
+    }
+
+    if (neg) {
         result[index] = '-';
-        index = bitwiseIncrement(index);
-    } else {
-        absNumber = number;
-    }
-
-    while (absNumber > 0) {
-        result[index] = chars[(absNumber & mask)];
-        index = bitwiseIncrement(index);
-        absNumber >>= r;
-    }
-
-    if (index == 0 || (number == 0 && index == 1)) {
-        result[index] = '0';
         index = bitwiseIncrement(index);
     }
 
     result[index] = '\0';
-
-    int left = (number < 0) ? 1 : 0;
+    int left = 0;
     int right = bitwiseDecrement(index);
     while (left < right) {
         char temp = result[right];
@@ -98,14 +93,22 @@ char* decimalToBase2r(int number, unsigned short r, kState* code) {
         left = bitwiseIncrement(left);
         right = bitwiseDecrement(right);
     }
-
+    result[index] = '\0';
+    int left = 0;
+    int right = bitwiseDecrement(index);
+    while (left < right) {
+        char temp = result[right];
+        result[right] = result[left];
+        result[left] = temp;
+        left = bitwiseIncrement(left);
+        right = bitwiseDecrement(right);
+    }
     return result;
 }
 
-
 int main() {
-    char* result;
-    unsigned int number = 63;
+    char *result;
+    int number = -63;
     unsigned short r = 1;
     kState code = kS_OK;
     result = decimalToBase2r(number, r, &code);

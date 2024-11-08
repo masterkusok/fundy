@@ -15,7 +15,7 @@ String *NewString(const char *);
 
 void DeleteString(String *);
 
-bool StringLess(String *, String *);
+int StringComp(String *, String *);
 
 bool StringEqual(String *, String *);
 

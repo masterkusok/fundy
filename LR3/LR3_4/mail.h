@@ -12,6 +12,7 @@ typedef struct {
 typedef struct {
     Address *Receiver;
     double Weight;
+    bool Delivered;
     String *ID, *CreationTime, *ReceiveTime;
 } Mail;
 

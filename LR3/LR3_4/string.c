@@ -36,10 +36,10 @@ String *NewString(const char *s) {
 
 void DeleteString(String *s) {
     free(s->buffer);
-    s->Len = 0;
+    free(s);
 }
 
-bool StringLess(String *s1, String *s2) {
+int StringComp(String *s1, String *s2) {
     if (s1->Len != s2->Len) {
         return s1->Len < s2->Len;
     }
@@ -47,22 +47,13 @@ bool StringLess(String *s1, String *s2) {
         if (s1->buffer[i] == s2->buffer[i]) {
             continue;
         }
-        return s1->buffer[i] < s2->buffer[i];
+        return s1->buffer[i] < s2->buffer[i] ? -1 : 1;
     }
-    return false;
+    return 0;
 }
 
 bool StringEqual(String *s1, String *s2) {
-    if (s1->Len != s2->Len) {
-        return false;
-    }
-
-    for (int i = 0; i < s1->Len; i++) {
-        if (s1->buffer[i] != s2->buffer[i]) {
-            return false;
-        }
-    }
-    return true;
+    return !StringComp(s1, s2);
 }
 
 String *CopyString(String *s) {

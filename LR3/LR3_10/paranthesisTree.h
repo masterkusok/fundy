@@ -1,8 +1,0 @@
-//
-// Created by fedor on 06.11.2024.
-//
-
-#ifndef LR3_10_PARANTHESISTREE_H
-#define LR3_10_PARANTHESISTREE_H
-
-#endif //LR3_10_PARANTHESISTREE_H

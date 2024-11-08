@@ -23,6 +23,8 @@ Mail *FindElement(Post *, char *);
 
 void FindExpiredMails(Post *);
 
+void FindDeliveredMails(Post *);
+
 void DestroyPost(Post *);
 
 #endif

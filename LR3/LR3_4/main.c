@@ -28,7 +28,11 @@ Address *inputAddressData() {
     printf("Введите индекс получателя (6 символов): ");
     scanf("%6s", postIndex);
 
-    return CreateAddress(city, street, house, flat, building, postIndex);
+    Address* addr = CreateAddress(city, street, house, flat, building, postIndex);
+    free(city);
+    free(street);
+    free(building);
+    return addr;
 }
 
 Mail *inputMailData() {
@@ -93,7 +97,7 @@ void interactiveDialog(Post *post) {
                 printf("Введите идентификатор для удаления: ");
                 scanf("%14s", identifier);
                 if (RemoveElement(post, identifier) == true) {
-                    printf("Отправление удалено.\n");
+                    printf("Отправление %s удалено.\n", identifier);
                 } else {
                     printf("Отправление с идентификатором %s не найдено.\n", identifier);
                 }
@@ -114,6 +118,20 @@ void interactiveDialog(Post *post) {
             case 5:
                 FindExpiredMails(post);
                 break;
+            case 6:
+                FindDeliveredMails(post);
+                break;
+            case 7:
+                printf("Введите идентификатор для поиска: ");
+                scanf("%14s", identifier);
+                Mail *found = FindElement(post, identifier);
+                if (found) {
+                    found->Delivered = true;
+                    printf("Отправление %s успешно доставлено\n", identifier);
+                } else {
+                    printf("Отправление %s не найдено\n", identifier);
+                }
+                break;
             case 0:
                 printf("Выход из программы.\n");
                 return;
@@ -122,6 +140,20 @@ void interactiveDialog(Post *post) {
         }
     }
 }
+
+//int main() {
+//    String* s1 = NewString("s1");
+//    String* s2 = NewString("s2");
+//    String* s3 = CopyString(s1);
+//    printf("%s\n", s3->buffer);
+//    ConcatStrings(s3, s2);
+//    printf("%s\n", s3->buffer);
+//    printf("%d\n", StringComp(s1, s2));
+//    printf("%d\n", StringEqual(s1, s2));
+//    CopyStringTo(s3, s1);
+//    printf("%s %s\n", s1->buffer, s3->buffer);
+//}
+
 
 int main(void) {
     Address *postAddress = inputAddressData();

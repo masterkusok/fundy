@@ -56,11 +56,11 @@ int descendingComp(const void *a, const void *b) {
     }
     int comp = strcmp(first->Surname, second->Surname);
     if (comp != 0) {
-        return comp;
+        return -comp;
     }
     comp = strcmp(first->Name, second->Name);
     if (comp != 0) {
-        return comp;
+        return -comp;
     }
     return first->ID < second->ID;
 }
@@ -73,11 +73,11 @@ int ascendingComp(const void *a, const void *b) {
     }
     int comp = strcmp(first->Surname, second->Surname);
     if (comp != 0) {
-        return -comp;
+        return comp;
     }
     comp = strcmp(first->Name, second->Name);
     if (comp != 0) {
-        return -comp;
+        return comp;
     }
     return first->ID > second->ID;
 }
@@ -85,11 +85,14 @@ int ascendingComp(const void *a, const void *b) {
 int main(int argc, char **argv) {
     Args *args = ParseArgs(argc, argv);
     if (!args) {
+        free(args);
         return kE_BAD_ALLOCATION;
     }
 
     if (args->State != kS_OK) {
-        return args->State;
+        int state = args->State;
+        free(args);
+        return state;
     }
 
     Vector *vector = CreateVector(2);
