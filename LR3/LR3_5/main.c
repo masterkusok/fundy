@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define EXAMS 5
+#include "student.h"
+#include "vector.h"
+#include "comparators.h"
 
 typedef enum {
     kS_OK,
@@ -10,144 +11,203 @@ typedef enum {
     kE_BAD_ALLOC
 } kState;
 
-typedef struct {
-    unsigned int id;
-    char *firstName;
-    char *lastName;
-    char *group;
-    unsigned char *grades;
-} Student;
-
-kState readStudents(const char *filePath, Student **studentsPtr, int *studentCount) {
+kState readStudents(const char *filePath, Vector *students) {
     FILE *file = fopen(filePath, "r");
     if (file == NULL) {
         return kE_CAN_NOT_OPEN_FILE;
     }
 
-    Student *students = NULL;
-    *studentCount = 0;
-
     while (!feof(file)) {
-        students = realloc(students, (*studentCount + 1) * sizeof(Student));
-        if (students == NULL) {
+        unsigned int id;
+        char *firstName;
+        char *lastName;
+        char *group;
+
+        unsigned char *grades = malloc(EXAMS * sizeof(unsigned char));
+        if (grades == NULL) {
             fclose(file);
             return kE_BAD_ALLOC;
         }
 
-        Student *student = &students[*studentCount];
-        student->grades = malloc(EXAMS * sizeof(unsigned char));
-        if (student->grades == NULL) {
-            fclose(file);
-            return kE_BAD_ALLOC;
-        }
-
-        fscanf(file, "%u %ms %ms %ms", &student->id, &student->firstName, &student->lastName, &student->group);
+        fscanf(file, "%u %ms %ms %ms", &id, &firstName, &lastName, &group);
         for (int i = 0; i < EXAMS; ++i) {
-            fscanf(file, "%hhu", &student->grades[i]);
+            fscanf(file, "%hhu", &grades[i]);
         }
-
-        (*studentCount)++;
+        Student *student = NewStudent(id, firstName, lastName, group, grades);
+        VectorPush(students, student);
     }
 
     fclose(file);
-    *studentsPtr = students;
     return kS_OK;
 }
 
-int compareById(const void *a, const void *b) {
-    Student *studentA = (Student *)a;
-    Student *studentB = (Student *)b;
-    return studentA->id - studentB->id;
+void sortStudents(Vector *students, int (*comparator)(const void *, const void *)) {
+    qsort(students->buffer, students->len, sizeof(Student *), comparator);
 }
 
-int compareByLastName(const void *a, const void *b) {
-    Student *studentA = (Student *)a;
-    Student *studentB = (Student *)b;
-    return strcmp(studentA->lastName, studentB->lastName);
-}
-
-int compareByFirstName(const void *a, const void *b) {
-    Student *studentA = (Student *)a;
-    Student *studentB = (Student *)b;
-    return strcmp(studentA->firstName, studentB->firstName);
-}
-
-int compareByGroup(const void *a, const void *b) {
-    Student *studentA = (Student *)a;
-    Student *studentB = (Student *)b;
-    return strcmp(studentA->group, studentB->group);
-}
-
-void sortStudents(Student *students, int count, int (*comparator)(const void*, const void*)) {
-    qsort(students, count, sizeof(Student), comparator);
-}
-
-void printStudentToFile(FILE *file, const Student *student) {
-    fprintf(file, "ID: %u\nФамилия: %s\nИмя: %s\nГруппа: %s\n", student->id, student->lastName, student->firstName, student->group);
-    fprintf(file, "Оценки: ");
-    for (int i = 0; i < EXAMS; ++i) {
-        fprintf(file, "%hhu ", student->grades[i]);
+void FprintStudentsToFile(FILE *file, Vector *students) {
+    for (int i = 0; i < students->len; i++) {
+        fprintf(file, "ID: %u\nФамилия: %s\nИмя: %s\nГруппа: %s\n", students->buffer[i]->ID,
+                students->buffer[i]->LastName, students->buffer[i]->FirstName,
+                students->buffer[i]->Group);
+        fprintf(file, "Оценки: ");
+        for (int j = 0; j < EXAMS; ++j) {
+            fprintf(file, "%hhu ", students->buffer[i]->Grades[j]);
+        }
+        fprintf(file, "\n");
     }
-    fprintf(file, "\n");
 }
 
 double calculateAverageGrade(const Student *student) {
     int sum = 0;
     for (int i = 0; i < EXAMS; ++i) {
-        sum += student->grades[i];
+        sum += student->Grades[i];
     }
-    return (double)sum / EXAMS;
+    return (double) sum / EXAMS;
 }
 
-Student *findStudentById(Student *students, int count, unsigned int id) {
-    for (int i = 0; i < count; ++i) {
-        if (students[i].id == id) {
-            return &students[i];
+void FprintAboveAverage(FILE *file, Vector *students, double average) {
+    fprintf(file, "Студенты, с средним баллом выше среднего:\n");
+    for (int i = 0; i < students->len; i++) {
+        double studAverage = calculateAverageGrade(students->buffer[i]);
+        if (studAverage < average) {
+            continue;
+        }
+        fprintf(file, "ID: %u\nФамилия: %s\nИмя: %s\nГруппа: %s\n", students->buffer[i]->ID,
+                students->buffer[i]->LastName, students->buffer[i]->FirstName,
+                students->buffer[i]->Group);
+        fprintf(file, "Оценки: ");
+        for (int i = 0; i < EXAMS; ++i) {
+            fprintf(file, "%hhu ", students->buffer[i]->Grades[i]);
+        }
+        fprintf(file, "\n");
+    }
+}
+
+Vector *findStudentsByCriteria(Vector *students, StudentCriteria criteria, void *arg) {
+    Vector *result = CreateVector(2);
+    if (!result) {
+        return NULL;
+    }
+    for (int i = 0; i < students->len; ++i) {
+        if (criteria(students->buffer[i], arg)) {
+            VectorPush(result, CopyStudent(students->buffer[i]));
         }
     }
-    return NULL;
+    return result;
 }
 
-Student *findStudentByLastName(Student *students, int count, const char *lastName) {
-    for (int i = 0; i < count; ++i) {
-        if (strcmp(students[i].lastName, lastName) == 0) {
-            return &students[i];
-        }
-    }
-    return NULL;
-}
+void interactiveDialogue(Vector *students, FILE *output) {
+    StudentCriteria criterias[4] = {
+            idCriteria,
+            lastNameCriteria,
+            firstNameCriteria,
+            groupCriteria,
+    };
 
-Student *findStudentByFirstName(Student *students, int count, const char *firstName) {
-    for (int i = 0; i < count; ++i) {
-        if (strcmp(students[i].firstName, firstName) == 0) {
-            return &students[i];
-        }
-    }
-    return NULL;
-}
+    StudentComparator comparators[4] = {
+            compareById,
+            compareByLastName,
+            compareByFirstName,
+            compareByGroup,
+    };
 
-Student *findStudentByGroup(Student *students, int count, const char *group) {
-    for (int i = 0; i < count; ++i) {
-        if (strcmp(students[i].group, group) == 0) {
-            return &students[i];
-        }
-    }
-    return NULL;
-}
+    int command;
+    while (1) {
+        printf("\nКоманды:\n");
+        printf("1. Поиск\n");
+        printf("2. Сортировка\n");
+        printf("3. Вывести студентов с оценками выше среднего\n");
+        printf("4. Выход\n");
+        printf("Введите номер команды: ");
+        scanf("%d", &command);
 
-void DestroyStudent(Student *student) {
-    free(student->firstName);
-    free(student->lastName);
-    free(student->group);
-    free(student->grades);
-}
-
-void writeStudentsWithAboveAverage(FILE *file, Student *students, int count, double avg) {
-    fprintf(file, "Студенты с оценками выше среднего балла:\n");
-    for (int i = 0; i < count; ++i) {
-        double studentAvg = calculateAverageGrade(&students[i]);
-        if (studentAvg > avg) {
-            fprintf(file, "Фамилия: %s, Имя: %s\n", students[i].lastName, students[i].firstName);
+        if (command == 1) {
+            printf("Поиск по:\n");
+            printf("1. ID\n");
+            printf("2. Фамилии\n");
+            printf("3. Имени\n");
+            printf("4. Группе\n");
+            printf("Введите номер критерия поиска: ");
+            int searchOption;
+            scanf("%d", &searchOption);
+            if (searchOption < 1 || searchOption > 4) {
+                printf("Неверный критерий поиска\n");
+                continue;
+            }
+            void *searchArg;
+            switch (searchOption) {
+                case 1: {
+                    unsigned int id;
+                    if (!scanf("%u", &id)) {
+                        printf("Ошибка ввода критерия");
+                        continue;
+                    };
+                    searchArg = &id;
+                    break;
+                }
+                case 2: {
+                    char *lastName;
+                    if (!scanf("%ms", &lastName)) {
+                        printf("Ошибка ввода критерия");
+                        continue;
+                    };
+                    searchArg = lastName;
+                    break;
+                }
+                case 3: {
+                    char *name;
+                    if (!scanf("%ms", &name)) {
+                        printf("Ошибка ввода критерия");
+                        continue;
+                    }
+                    searchArg = name;
+                    break;
+                }
+                case 4: {
+                    char *group;
+                    if (!scanf("%ms", &group)) {
+                        printf("Ошибка ввода критерия");
+                        continue;
+                    }
+                    searchArg = group;
+                    break;
+                }
+                default: {
+                    searchArg = NULL;
+                    printf("unknown option");
+                    break;
+                }
+            }
+            Vector *filtered = findStudentsByCriteria(students, criterias[searchOption - 1], searchArg);
+            if (searchOption != 1) {
+                free(searchArg);
+            }
+            FprintStudentsToFile(output, filtered);
+            DestroyVector(filtered);
+        } else if (command == 2) {
+            printf("Сортировка по:\n");
+            printf("1. ID\n");
+            printf("2. Фамилии\n");
+            printf("3. Имени\n");
+            printf("4. Группе\n");
+            printf("Введите номер критерия сортировки: ");
+            int searchOption;
+            scanf("%d", &searchOption);
+            if (searchOption < 1 || searchOption > 4) {
+                printf("Неверный критерий сортировки\n");
+                continue;
+            }
+            sortStudents(students, comparators[searchOption - 1]);
+            FprintStudentsToFile(output, students);
+        } else if (command == 3) {
+            double average = 0;
+            for (int i = 0; i < students->len; i++) {
+                average += calculateAverageGrade(students->buffer[i]) / students->len;
+            }
+            FprintAboveAverage(output, students, average);
+        } else if (command == 4) {
+            break;
         }
     }
 }
@@ -161,130 +221,29 @@ int main(int argc, char *argv[]) {
     const char *inputFile = argv[1];
     const char *outputFile = argv[2];
 
-    int studentCount;
-    Student *students;
+    Vector *students = CreateVector(2);
 
-    kState result = readStudents(inputFile, &students, &studentCount);
+    kState result = readStudents(inputFile, students);
     if (result != kS_OK) {
         if (result == kE_CAN_NOT_OPEN_FILE) {
             fprintf(stderr, "Ошибка: не удалось открыть файл %s\n", inputFile);
-        } else if (result == kE_BAD_ALLOC) {
+        } else {
             fprintf(stderr, "Ошибка: не удалось выделить память\n");
         }
+        DestroyVector(students);
         return EXIT_FAILURE;
     }
 
     FILE *output = fopen(outputFile, "w");
     if (output == NULL) {
         fprintf(stderr, "Ошибка: не удалось открыть выходной файл %s\n", outputFile);
+        DestroyVector(students);
         return EXIT_FAILURE;
     }
 
-    int command;
-    while (1) {
-        printf("\nКоманды:\n");
-        printf("1. Поиск по ID\n");
-        printf("2. Поиск по фамилии\n");
-        printf("3. Поиск по имени\n");
-        printf("4. Поиск по группе\n");
-        printf("5. Сортировка\n");
-        printf("6. Вывести студентов с оценками выше среднего\n");
-        printf("7. Выход\n");
-        printf("Введите номер команды: ");
-        scanf("%d", &command);
-
-        if (command == 1) {
-            unsigned int idToFind;
-            printf("Введите ID студента: ");
-            scanf("%u", &idToFind);
-
-            Student *foundStudent = findStudentById(students, studentCount, idToFind);
-            if (foundStudent) {
-                printStudentToFile(output, foundStudent);
-            } else {
-                fprintf(output, "Студент с ID %u не найден\n", idToFind);
-            }
-
-        } else if (command == 2) {
-            char lastName[50];
-            printf("Введите фамилию студента: ");
-            scanf("%s", lastName);
-
-            Student *foundStudent = findStudentByLastName(students, studentCount, lastName);
-            if (foundStudent) {
-                printStudentToFile(output, foundStudent);
-            } else {
-                fprintf(output, "Студент с фамилией %s не найден\n", lastName);
-            }
-
-        } else if (command == 3) {
-            char firstName[50];
-            printf("Введите имя студента: ");
-            scanf("%s", firstName);
-
-            Student *foundStudent = findStudentByFirstName(students, studentCount, firstName);
-            if (foundStudent) {
-                printStudentToFile(output, foundStudent);
-            } else {
-                fprintf(output, "Студент с именем %s не найден\n", firstName);
-            }
-
-        } else if (command == 4) {
-            char group[50];
-            printf("Введите группу студента: ");
-            scanf("%s", group);
-
-            Student *foundStudent = findStudentByGroup(students, studentCount, group);
-            if (foundStudent) {
-                printStudentToFile(output, foundStudent);
-            } else {
-                fprintf(output, "Студент из группы %s не найден\n", group);
-            }
-
-        } else if (command == 5) {
-            printf("Сортировка по:\n");
-            printf("1. ID\n");
-            printf("2. Фамилии\n");
-            printf("3. Имени\n");
-            printf("4. Группе\n");
-            printf("Введите номер критерия сортировки: ");
-            int sortOption;
-            scanf("%d", &sortOption);
-
-            if (sortOption == 1) {
-                sortStudents(students, studentCount, compareById);
-            } else if (sortOption == 2) {
-                sortStudents(students, studentCount, compareByLastName);
-            } else if (sortOption == 3) {
-                sortStudents(students, studentCount, compareByFirstName);
-            } else if (sortOption == 4) {
-                sortStudents(students, studentCount, compareByGroup);
-            }
-
-            for (int i = 0; i < studentCount; ++i) {
-                printStudentToFile(output, &students[i]);
-            }
-
-        } else if (command == 6) {
-            double totalAvg = 0.0;
-            for (int i = 0; i < studentCount; ++i) {
-                totalAvg += calculateAverageGrade(&students[i]);
-            }
-            totalAvg /= studentCount;
-
-            writeStudentsWithAboveAverage(output, students, studentCount, totalAvg);
-
-        } else if (command == 7) {
-            break;
-        }
-    }
-
+    interactiveDialogue(students, output);
     fclose(output);
-
-    for (int i = 0; i < studentCount; ++i) {
-        DestroyStudent(&students[i]);
-    }
-    free(students);
-
+    DestroyVector(students);
+    printf("exit\n");
     return EXIT_SUCCESS;
 }
